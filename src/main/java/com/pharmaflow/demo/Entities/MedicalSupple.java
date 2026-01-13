@@ -15,6 +15,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "medical_supplies")
 @PrimaryKeyJoinColumn(name = "product_id")
-public class MedicalSupplies extends Product{
+public class MedicalSupple extends Product{
     private long size;
 }

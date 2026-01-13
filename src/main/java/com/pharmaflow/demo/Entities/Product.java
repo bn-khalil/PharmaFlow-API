@@ -16,7 +16,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "products")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Product extends BaseEntity {
+public abstract class Product extends BaseEntity {
+
+    @Column(nullable = false, unique = true)
+    private String name;
 
     @Column(nullable = false)
     private String image;
@@ -27,6 +30,9 @@ public class Product extends BaseEntity {
     private LocalDateTime expiryDate;
 
     private BigDecimal price;
+
+    @Column(unique = true)
+    private String barcode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
