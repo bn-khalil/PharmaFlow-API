@@ -1,18 +1,20 @@
 package com.pharmaflow.demo.Entities;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-//@Entity
+@Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Table(name = "medicalsupples")
-public class Medicalsupple extends Product{
+@Table(name = "medical_supplies")
+@PrimaryKeyJoinColumn(name = "product_id")
+public class MedicalSupplies extends Product{
     private long size;
 }

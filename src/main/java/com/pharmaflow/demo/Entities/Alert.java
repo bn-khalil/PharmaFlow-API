@@ -6,25 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "sale_items")
-public class SaleItems extends BaseEntity {
+@Table(name = "alerts")
+public class Alert extends BaseEntity{
+    @Column(nullable = false)
+    private String message;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
 
-    @ManyToOne
-    @JoinColumn(name = "sale_id", nullable = false)
-    private Sale sale;
-
-    private long quantity;
-
-    private BigDecimal priceAtSale;
+    private boolean isRead;
 }
