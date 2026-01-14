@@ -1,5 +1,7 @@
 package com.pharmaflow.demo.Dto;
 
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.pharmaflow.demo.Entities.Category;
 import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
@@ -17,6 +19,15 @@ import java.util.UUID;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.PROPERTY,
+        property = "productType"
+)
+@JsonSubTypes({
+        @JsonSubTypes.Type(value = MedicineDto.class, name = "MEDICINE"),
+        @JsonSubTypes.Type(value = MedicalSuppleDto.class, name = "SUPPLY")
+})
 public abstract class ProductDto {
         protected UUID id;
         protected String name;

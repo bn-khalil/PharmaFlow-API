@@ -5,10 +5,10 @@ import lombok.Data;
 
 import java.time.LocalDateTime;
 
-@Data
 @Builder
 public record ErrorResponse(
         int statusCode,
         String message,
+        String path,
         LocalDateTime timestamp
         ) {}

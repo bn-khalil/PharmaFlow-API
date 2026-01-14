@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Services.Impl;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Product;
+import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.ProductMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
@@ -40,7 +41,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductDto getProductById(UUID productId) {
         Product product = this.productRepository.getProductById(productId).orElseThrow(
-                () -> new RuntimeException("user not found!")
+                () -> new ResourceNotFoundException("product not found!")
         );
         return this.productMapper.toDto(product);
     }
@@ -50,9 +51,9 @@ public class ProductServiceImpl implements ProductService {
     public ProductDto createProduct(ProductDto productDto) {
         Product product = this.productMapper.toEntity(productDto);
         if (product == null)
-            throw new RuntimeException("user not found!");
+            throw new ResourceNotFoundException("product not found!");
         Category category = this.categoryRepository.findByName(productDto.getCategory()).orElseThrow(
-                () -> new RuntimeException("category not found!")
+                () -> new ResourceNotFoundException("category not found!")
         );
         product.setCategory(category);
         product = this.productRepository.save(product);

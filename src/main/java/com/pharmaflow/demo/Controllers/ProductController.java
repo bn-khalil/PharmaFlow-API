@@ -1,13 +1,13 @@
 package com.pharmaflow.demo.Controllers;
 
+import com.pharmaflow.demo.Dto.MedicalSuppleDto;
+import com.pharmaflow.demo.Dto.MedicineDto;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,7 +29,13 @@ public class ProductController {
     }
 
     @GetMapping("/{product_id}")
-    ResponseEntity<ProductDto> getAllProducts(@PathVariable UUID product_id) {
+    ResponseEntity<ProductDto> getAllProducts(@PathVariable(name = "product_id") UUID product_id) {
         return ResponseEntity.ok().body(this.productService.getProductById(product_id));
+    }
+
+    @PostMapping("/")
+    ResponseEntity<ProductDto> createMedicine(@RequestBody ProductDto productDto) {
+        System.out.println("am in");
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.productService.createProduct(productDto));
     }
 }
