@@ -1,5 +1,6 @@
 package com.pharmaflow.demo;
 
+import com.github.javafaker.Faker;
 import com.pharmaflow.demo.Dto.MedicineDto;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Entities.Category;
@@ -43,24 +44,39 @@ public class DemoApplication {
 			CategoryRepository categoryRepository,
 			ProductService productService ) {
 
+		List<String> items = List.of (
+				"Pain & Fever",
+				"Cold, Flu & Allergy",
+				"Chronic Diseases",
+				"Digestive System",
+				"Vitamins & Supplements"
+		);
+
 		return args -> {
-//			Category category = new Category("A", "some drugs");
-//			categoryRepository.save(category);
-
-//			MedicineDto product = new MedicineDto();
-//			product.setName("dolipran");
-//			product.setImage("emage");
-//			product.setCategory("A");
-//			product.setBarcode("bar1");
-//			product.setDosageUnit(2);
-//			product.setPrescription(true);
-//			product.setPrice(new BigDecimal(1337));
-//			product.setQuantity(0);
-//			product.setExpiryDate(LocalDateTime.now());
-
-//			productService.createProduct(product);
-
-			System.out.println(productService.getProductById(UUID.fromString("62e9e2ab-376d-409a-93df-419bbed44170")));
+//			Faker faker = new Faker();
+//			for (int i = 0; i < 20; i++) {//
+//				MedicineDto product = new MedicineDto();
+//				product.setName(faker.medical().medicineName());
+//				product.setImage("photo_" + i);
+//				product.setCategory(items.get(faker.random().nextInt(items.size())));
+//				product.setBarcode("bar__" + i);
+//				product.setDosageUnit(2);
+//				product.setPrescription(faker.bool().bool());
+//
+//				product.setPrice(BigDecimal.valueOf(
+//						faker.number().randomDouble(2, 5, 100)
+//				));
+//
+//				product.setQuantity(faker.number().numberBetween(0, 200));
+//
+//				product.setExpiryDate(
+//						LocalDateTime.now().plusDays(
+//								faker.number().numberBetween(30, 730)
+//						)
+//				);
+//
+//				productService.createProduct(product);
+//			}
 		};
 	}
 }

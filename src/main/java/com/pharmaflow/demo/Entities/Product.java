@@ -19,22 +19,23 @@ import java.time.LocalDateTime;
 public abstract class Product extends BaseEntity {
 
     @Column(nullable = false, unique = true)
-    private String name;
+    protected String name;
 
     @Column(nullable = false)
-    private String image;
+    protected String image;
 
-    private long quantity;
+    protected long quantity;
 
     @Column(name = "expiry_date", nullable = false)
-    private LocalDateTime expiryDate;
+    protected LocalDateTime expiryDate;
 
-    private BigDecimal price;
+    protected BigDecimal price;
 
     @Column(unique = true)
-    private String barcode;
+    protected String barcode;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
-    private Category category;
+    protected Category category;
+
 }

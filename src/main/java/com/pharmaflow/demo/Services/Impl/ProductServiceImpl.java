@@ -56,7 +56,7 @@ public class ProductServiceImpl implements ProductService {
         );
         product.setCategory(category);
         product = this.productRepository.save(product);
-        productDto.setId(product.get);
+        productDto.setId(product.getId());
         return productDto;
     }
 }

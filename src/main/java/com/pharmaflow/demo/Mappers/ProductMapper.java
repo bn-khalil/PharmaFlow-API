@@ -8,9 +8,11 @@ import com.pharmaflow.demo.Entities.Medicine;
 import com.pharmaflow.demo.Entities.Product;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 @Mapper(componentModel = "spring")
 public interface ProductMapper {
 
