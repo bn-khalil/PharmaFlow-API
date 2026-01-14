@@ -1,10 +1,13 @@
 package com.pharmaflow.demo;
 
+import com.pharmaflow.demo.Dto.MedicineDto;
+import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Medicine;
 import com.pharmaflow.demo.Entities.Product;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
+import com.pharmaflow.demo.Services.ProductService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.SharedCacheMode;
@@ -35,24 +38,29 @@ public class DemoApplication {
 	}
 
 	@Bean
-	public CommandLineRunner commandLineRuner(ProductRepository productRepository, CategoryRepository categoryRepository) {
+	public CommandLineRunner commandLineRuner(
+			ProductRepository productRepository,
+			CategoryRepository categoryRepository,
+			ProductService productService ) {
 
 		return args -> {
-			Category category = new Category("A", "some drugs");
-			categoryRepository.save(category);
+//			Category category = new Category("A", "some drugs");
+//			categoryRepository.save(category);
 
-			Medicine product = new Medicine();
-			product.setName("dolipran");
-			product.setImage("emage");
-			product.setCategory(category);
-			product.setBarcode("bar");
-			product.setDosageUnit(2);
-			product.setPrescription(true);
-			product.setPrice(new BigDecimal(1337));
-			product.setQuantity(0);
-			product.setExpiryDate(LocalDateTime.now());
+//			MedicineDto product = new MedicineDto();
+//			product.setName("dolipran");
+//			product.setImage("emage");
+//			product.setCategory("A");
+//			product.setBarcode("bar1");
+//			product.setDosageUnit(2);
+//			product.setPrescription(true);
+//			product.setPrice(new BigDecimal(1337));
+//			product.setQuantity(0);
+//			product.setExpiryDate(LocalDateTime.now());
 
-			productRepository.save(product);
+//			productService.createProduct(product);
+
+			System.out.println(productService.getProductById(UUID.fromString("62e9e2ab-376d-409a-93df-419bbed44170")));
 		};
 	}
 }
