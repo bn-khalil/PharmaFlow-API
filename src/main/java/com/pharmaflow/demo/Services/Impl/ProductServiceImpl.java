@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Services.Impl;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Product;
+import com.pharmaflow.demo.Exceptions.InvalidStockException;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.ProductMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
@@ -51,5 +52,25 @@ public class ProductServiceImpl implements ProductService {
         product = this.productRepository.save(product);
         productDto.setId(product.getId());
         return productDto;
+    }
+
+    @Override
+    public ProductDto addStock(UUID productId, long quantity) {
+        Product product = this.productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product Not Found!")
+        );
+        product.setQuantity(product.getQuantity() + quantity);
+        return this.productMapper.toDto(this.productRepository.save(product));
+    }
+
+    @Override
+    public ProductDto reduceStock(UUID productId, long quantity) {
+        Product product = this.productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product Not Found!")
+        );
+        if (product.getQuantity() < quantity)
+            throw new InvalidStockException("Stock not enough for product: " + product.getName());
+        product.setQuantity(product.getQuantity() - quantity);
+        return this.productMapper.toDto(this.productRepository.save(product));
     }
 }

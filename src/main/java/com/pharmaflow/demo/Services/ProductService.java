@@ -11,5 +11,6 @@ public interface ProductService {
     List<ProductDto> getAllProducts();
     ProductDto getProductById(UUID productId);
     ProductDto createProduct(ProductDto productDto);
-
+    ProductDto addStock(UUID productId, long quantity);
+    ProductDto reduceStock(UUID productId, long quantity);
 }

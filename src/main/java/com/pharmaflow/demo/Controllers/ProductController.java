@@ -1,13 +1,11 @@
 package com.pharmaflow.demo.Controllers;
 
-import com.pharmaflow.demo.Dto.MedicalSuppleDto;
-import com.pharmaflow.demo.Dto.MedicineDto;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Services.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -31,8 +29,8 @@ public class ProductController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("")
     ResponseEntity<ProductDto> createMedicine(@RequestBody ProductDto productDto) {
-        System.out.println("am in");
         return ResponseEntity.status(HttpStatus.CREATED).body(this.productService.createProduct(productDto));
     }
 }
