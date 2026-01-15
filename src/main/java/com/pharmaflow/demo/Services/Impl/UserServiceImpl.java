@@ -5,24 +5,17 @@ import com.pharmaflow.demo.Entities.User;
 import com.pharmaflow.demo.Mappers.UserMapper;
 import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-
-    @Autowired
-    public UserServiceImpl(
-            UserRepository userRepository,
-            UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-    }
 
     @Override
     public List<UserDto> getAllUsers() {

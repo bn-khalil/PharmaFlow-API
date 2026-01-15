@@ -8,26 +8,26 @@ import com.pharmaflow.demo.Exceptions.ResourceDuplicated;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.UserMapper;
 import com.pharmaflow.demo.Repositories.UserRepository;
+import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuthService;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final BCryptPasswordEncoder encoder;
-
-    @Autowired
-    public AuthServiceImpl(UserRepository userRepository,
-                           UserMapper userMapper) {
-        this.userRepository = userRepository;
-        this.userMapper = userMapper;
-        this.encoder = new BCryptPasswordEncoder(12);
-    }
+    private final AuthenticationManager authenticationManager;
+    private final JwtService jwtService;
 
     @Override
     @Transactional
@@ -46,13 +46,16 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public AuthResponse login(UserLogin userLogin) {
-        User user = this.userRepository.findUserByEmail(userLogin.email()).orElseThrow(
-                () -> new ResourceNotFoundException("no subscription with this email")
+        Authentication auth = this.authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userLogin.email(), userLogin.password())
         );
+        UserSecurity userSecurity = (UserSecurity) auth.getPrincipal();
+        String jwtToken = this.jwtService.generateToken(userSecurity);
 
         return AuthResponse.builder()
-                .message(user.getFirstName() + "singed successfully!")
-                .email(user.getEmail())
+                .message("singed successfully!")
+                .email(userSecurity.getUsername())
+                .token(jwtToken)
                 .build();
     }
 }

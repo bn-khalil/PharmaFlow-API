@@ -4,6 +4,7 @@ import com.pharmaflow.demo.Dto.MedicalSuppleDto;
 import com.pharmaflow.demo.Dto.MedicineDto;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Services.ProductService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,14 +15,10 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/products")
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
-
-    @Autowired
-    public ProductController(ProductService productService) {
-        this.productService = productService;
-    }
 
     @GetMapping("/")
     ResponseEntity<List<ProductDto>> getAllProducts() {
