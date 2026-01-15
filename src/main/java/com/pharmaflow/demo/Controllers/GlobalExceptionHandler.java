@@ -1,6 +1,7 @@
 package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.ErrorResponse;
+import com.pharmaflow.demo.Exceptions.InvalidStockException;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,21 @@ public class GlobalExceptionHandler {
             WebRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .statusCode(HttpStatus.NOT_FOUND.value())
+                .message(ex.getMessage())
+                .timestamp(LocalDateTime.now())
+                .errorCode("NOT_FOUND")
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errorResponse);
+    }
+
+    @ExceptionHandler(InvalidStockException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidStockException(
+            InvalidStockException ex,
+            WebRequest request) {
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode(HttpStatus.CONFLICT.value())
+                .errorCode("STOCK_ERROR")
                 .message(ex.getMessage())
                 .timestamp(LocalDateTime.now())
                 .path(request.getDescription(false).replace("uri=", ""))

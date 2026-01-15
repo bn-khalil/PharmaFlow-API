@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -25,5 +26,5 @@ public class Sale extends BaseEntity{
     private User saler;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "sale")
-    List<SaleItems> saleItems;
+    List<SaleItem> saleItems;
 }
