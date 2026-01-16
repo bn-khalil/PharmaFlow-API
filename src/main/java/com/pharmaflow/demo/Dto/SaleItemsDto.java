@@ -13,8 +13,8 @@ import java.util.UUID;
 public record SaleItemsDto(
         UUID id,
         UUID productId,
+        UUID saleId,
         String productName,
-        SaleDto saleDto,
         long quantity,
         BigDecimal priceAtSale
 ) {

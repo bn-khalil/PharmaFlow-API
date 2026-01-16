@@ -1,7 +1,7 @@
 package com.pharmaflow.demo.Controllers;
 
-import com.pharmaflow.demo.Dto.SaleDto;
-import com.pharmaflow.demo.Services.SaleService;
+import com.pharmaflow.demo.Dto.CategoryDto;
+import com.pharmaflow.demo.Services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/sale")
+@RequestMapping("/category")
 @RequiredArgsConstructor
-public class SaleController {
+public class CategoryController {
 
-    private final SaleService saleService;
+    private final CategoryService categoryService;
 
     @PostMapping
-    public ResponseEntity<SaleDto> createSale(@RequestBody SaleDto saleDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.saleService.createSale(saleDto));
+    public ResponseEntity<CategoryDto> createCategory(@RequestBody CategoryDto categoryDto) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.categoryService.createCategory(categoryDto));
     }
 }

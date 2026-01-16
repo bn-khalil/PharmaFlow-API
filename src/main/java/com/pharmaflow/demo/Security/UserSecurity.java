@@ -12,6 +12,7 @@ import java.util.Collection;
 import java.util.List;
 
 @AllArgsConstructor
+@Data
 public class UserSecurity implements UserDetails {
 
     private User user;

@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 public interface CategoryService {
+    CategoryDto createCategory(CategoryDto categoryDto);
     List<CategoryDto> getAllCategories();
     Optional<CategoryDto> getCategoryById(UUID categoryId);
 }

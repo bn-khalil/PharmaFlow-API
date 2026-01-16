@@ -3,11 +3,10 @@ package com.pharmaflow.demo;
 import com.github.javafaker.Faker;
 import com.pharmaflow.demo.Dto.MedicineDto;
 import com.pharmaflow.demo.Dto.ProductDto;
-import com.pharmaflow.demo.Entities.Category;
-import com.pharmaflow.demo.Entities.Medicine;
-import com.pharmaflow.demo.Entities.Product;
-import com.pharmaflow.demo.Repositories.CategoryRepository;
-import com.pharmaflow.demo.Repositories.ProductRepository;
+import com.pharmaflow.demo.Entities.*;
+import com.pharmaflow.demo.Mappers.SaleItemMapper;
+import com.pharmaflow.demo.Mappers.SaleMapper;
+import com.pharmaflow.demo.Repositories.*;
 import com.pharmaflow.demo.Services.ProductService;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -15,7 +14,6 @@ import jakarta.persistence.SharedCacheMode;
 import jakarta.persistence.ValidationMode;
 import jakarta.persistence.spi.ClassTransformer;
 import jakarta.persistence.spi.PersistenceUnitInfo;
-import jakarta.persistence.spi.PersistenceUnitTransactionType;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -42,7 +40,20 @@ public class DemoApplication {
 	public CommandLineRunner commandLineRuner(
 			ProductRepository productRepository,
 			CategoryRepository categoryRepository,
-			ProductService productService ) {
+			ProductService productService,
+			SaleRepository saleRepository,
+			SaleItemRepository saleItemRepository,
+			SaleMapper saleMapper,
+			SaleItemMapper saleItemMapper,
+			UserRepository userRepository) {
+
+//		User user = userRepository.findUserByEmail("bn32@gmail.com").get();
+//		Sale sale = new Sale();
+//		sale.setTotalAmount(new BigDecimal(12));
+//		sale.setSaler(user);
+//		sale.setSaleItems(List.of(new SaleItem()));
+//
+
 
 		List<String> items = List.of (
 				"Pain & Fever",

@@ -29,6 +29,7 @@ public abstract class Product extends BaseEntity {
     @Column(name = "expiry_date", nullable = false)
     protected LocalDateTime expiryDate;
 
+    //price should not be null
     protected BigDecimal price;
 
     @Column(unique = true)
