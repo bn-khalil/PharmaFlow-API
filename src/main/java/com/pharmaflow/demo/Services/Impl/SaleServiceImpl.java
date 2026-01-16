@@ -1,6 +1,7 @@
 package com.pharmaflow.demo.Services.Impl;
 
 import com.pharmaflow.demo.Dto.SaleDto;
+import com.pharmaflow.demo.Dto.SaleItemsDto;
 import com.pharmaflow.demo.Entities.Product;
 import com.pharmaflow.demo.Entities.Sale;
 import com.pharmaflow.demo.Entities.SaleItem;
@@ -21,8 +22,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +31,7 @@ public class SaleServiceImpl implements SaleService {
     private final SaleRepository saleRepository;
     private final SaleItemRepository saleItemRepository;
     private final ProductRepository productRepository;
+    private final ProductService productService;
     private final SaleMapper saleMapper;
 
     @Override
@@ -44,18 +45,31 @@ public class SaleServiceImpl implements SaleService {
 
         sale.setSaler(userSecurity.getUser());
 
-        List<SaleItem> list = saleDto.saleItemsDtos().stream().map( saleItem -> {
-            Product product = this.productRepository.getProductById(saleItem.productId()).orElseThrow(
+        Map<UUID, Long> mergedItems = new HashMap<>();
+
+        for (SaleItemsDto item : saleDto.saleItemsDtos()) {
+            UUID id = item.productId();
+            long currentQty = mergedItems.getOrDefault(id, 0L);
+            mergedItems.put(id, currentQty + item.quantity());
+        }
+
+        List<SaleItem> list = mergedItems.entrySet().stream().map( entry -> {
+            UUID productId = entry.getKey();
+            Long quantity = entry.getValue();
+
+            this.productService.reduceStock(productId, quantity);
+
+            Product product = this.productRepository.getProductById(productId).orElseThrow(
                     () -> new ResourceNotFoundException("Product Not Found!")
             );
-            BigDecimal itempTotal = product.getPrice().multiply(BigDecimal.valueOf(saleItem.quantity()));
+            BigDecimal itempTotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));
             total[0] = total[0].add(itempTotal);
 
             SaleItem newItem = new SaleItem();
             newItem.setProduct(product);
             newItem.setSale(sale);
             newItem.setPriceAtSale(product.getPrice());
-            newItem.setQuantity(saleItem.quantity());
+            newItem.setQuantity(quantity);
             return newItem;
         }).toList();
 
