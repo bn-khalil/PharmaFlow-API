@@ -10,7 +10,7 @@ import com.pharmaflow.demo.Mappers.UserMapper;
 import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuthService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;

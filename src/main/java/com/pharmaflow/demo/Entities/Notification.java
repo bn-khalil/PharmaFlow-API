@@ -1,6 +1,6 @@
 package com.pharmaflow.demo.Entities;
 
-import com.pharmaflow.demo.Enums.Notif;
+import com.pharmaflow.demo.Enums.Notify;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -22,7 +22,5 @@ public class Notification extends BaseEntity{
     private Product product;
 
     @Enumerated(EnumType.STRING)
-    private Notif status;
-
-    private boolean isRead;
+    private Notify status;
 }

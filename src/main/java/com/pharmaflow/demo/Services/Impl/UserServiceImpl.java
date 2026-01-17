@@ -8,6 +8,7 @@ import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,6 +29,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<UserDto> getAllUsers() {
         List<User> users = this.userRepository.findAll();
         return this.userMapper.toDto(users);

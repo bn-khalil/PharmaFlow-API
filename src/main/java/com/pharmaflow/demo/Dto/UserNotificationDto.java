@@ -1,18 +1,17 @@
 package com.pharmaflow.demo.Dto;
 
-import com.pharmaflow.demo.Entities.Product;
-import com.pharmaflow.demo.Enums.Notif;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
-public record NotificationDto(
+public record UserNotificationDto (
         UUID id,
         String message,
-        Product product,
-        Notif status,
+        UUID productId,
+        String productName,
+        String status,
         boolean isRead,
         LocalDateTime createdAt
 ) {

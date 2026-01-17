@@ -1,9 +1,10 @@
 package com.pharmaflow.demo.Services;
 
-import com.pharmaflow.demo.Dto.NotificationDto;
-
-import java.util.List;
+import com.pharmaflow.demo.Entities.Notification;
+import com.pharmaflow.demo.Entities.Product;
+import com.pharmaflow.demo.Enums.Notify;
 
 public interface NotificationService {
-    List<NotificationDto> getAllNotification();
+    public void createNotification(String message, Notify notify, Product product);
+    public void broadCastToAllUsers(Notification notification);
 }

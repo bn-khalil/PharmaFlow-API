@@ -7,15 +7,17 @@ import com.pharmaflow.demo.Entities.Product;
 import com.pharmaflow.demo.Entities.Sale;
 import com.pharmaflow.demo.Entities.SaleItem;
 import com.pharmaflow.demo.Enums.Action;
+import com.pharmaflow.demo.Enums.Notify;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.SaleMapper;
 import com.pharmaflow.demo.Repositories.ProductRepository;
 import com.pharmaflow.demo.Repositories.SaleRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuditService;
+import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
 import com.pharmaflow.demo.Services.SaleService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,6 +34,7 @@ public class SaleServiceImpl implements SaleService {
     private final ProductService productService;
     private final SaleMapper saleMapper;
     private final AuditService auditService;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -80,7 +83,7 @@ public class SaleServiceImpl implements SaleService {
                     .stockBefore(before)
                     .stockAfter(after)
                     .build();
-
+            this.notificationService.createNotification("new prodouct created", Notify.STOCK_ADDED, product);
             this.productService.reduceStock(productId, quantity);
             this.auditService.createAudit(auditDto);
             return newItem;
@@ -88,7 +91,6 @@ public class SaleServiceImpl implements SaleService {
 
         sale.setSaleItems(list);
         sale.setTotalAmount(total[0]);
-
         return this.saleMapper.toDto(this.saleRepository.save(sale));
     }
 }

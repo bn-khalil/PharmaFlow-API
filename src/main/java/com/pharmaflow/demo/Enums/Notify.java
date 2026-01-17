@@ -1,6 +1,6 @@
 package com.pharmaflow.demo.Enums;
 
-public enum Notification {
+public enum Notify {
     STOCK_ADDED,
     LOW_STOCK,
     NEAR_EXPIRY,

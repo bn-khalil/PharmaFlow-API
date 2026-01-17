@@ -9,7 +9,7 @@ import com.pharmaflow.demo.Mappers.ProductMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
 import com.pharmaflow.demo.Services.ProductService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +26,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
 
     @Override
+    @Transactional(readOnly = true)
     public List<ProductDto> getAllProducts() {
         List<Product> products = this.productRepository.findAll();
         return this.productMapper.toDtoList(products);
