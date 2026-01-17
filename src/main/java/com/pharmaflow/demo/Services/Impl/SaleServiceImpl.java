@@ -1,24 +1,20 @@
 package com.pharmaflow.demo.Services.Impl;
 
+import com.pharmaflow.demo.Dto.AuditDto;
 import com.pharmaflow.demo.Dto.SaleDto;
 import com.pharmaflow.demo.Dto.SaleItemsDto;
-import com.pharmaflow.demo.Entities.Audit;
 import com.pharmaflow.demo.Entities.Product;
 import com.pharmaflow.demo.Entities.Sale;
 import com.pharmaflow.demo.Entities.SaleItem;
 import com.pharmaflow.demo.Enums.Action;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
-import com.pharmaflow.demo.Mappers.SaleItemMapper;
 import com.pharmaflow.demo.Mappers.SaleMapper;
-import com.pharmaflow.demo.Mappers.UserMapper;
-import com.pharmaflow.demo.Repositories.AuditRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
-import com.pharmaflow.demo.Repositories.SaleItemRepository;
 import com.pharmaflow.demo.Repositories.SaleRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
+import com.pharmaflow.demo.Services.AuditService;
 import com.pharmaflow.demo.Services.ProductService;
 import com.pharmaflow.demo.Services.SaleService;
-import com.pharmaflow.demo.Services.UserService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -35,7 +31,7 @@ public class SaleServiceImpl implements SaleService {
     private final ProductRepository productRepository;
     private final ProductService productService;
     private final SaleMapper saleMapper;
-    private final AuditRepository auditRepository;
+    private final AuditService auditService;
 
     @Override
     @Transactional
@@ -58,8 +54,7 @@ public class SaleServiceImpl implements SaleService {
 
         List<SaleItem> list = mergedItems.entrySet().stream().map( entry -> {
             UUID productId = entry.getKey();
-            Long quantity = entry.getValue();
-            Audit audit = new Audit();
+            long quantity = entry.getValue();
 
             Product product = this.productRepository.getProductById(productId).orElseThrow(
                     () -> new ResourceNotFoundException("Product Not Found!")
@@ -74,18 +69,20 @@ public class SaleServiceImpl implements SaleService {
             newItem.setPriceAtSale(product.getPrice());
             newItem.setQuantity(quantity);
 
-            audit.setAction(Action.SALE);
-            audit.setProductName(newItem.getProduct().getName());
-            audit.setQuantity(newItem.getQuantity());
-            audit.setResponsibleEmail(userSecurity.getUsername());
-
             long before = product.getQuantity();
             long after = before - quantity;
 
-            audit.setStockBefore(before);
-            audit.setStockAfter(after);
+            AuditDto auditDto = AuditDto.builder()
+                    .action(Action.SALE)
+                    .productName(newItem.getProduct().getName())
+                    .quantity(newItem.getQuantity())
+                    .responsibleEmail(userSecurity.getUsername())
+                    .stockBefore(before)
+                    .stockAfter(after)
+                    .build();
+
             this.productService.reduceStock(productId, quantity);
-            this.auditRepository.save(audit);
+            this.auditService.createAudit(auditDto);
             return newItem;
         }).toList();
 
