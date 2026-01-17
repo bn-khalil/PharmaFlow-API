@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Services.Impl;
 import com.pharmaflow.demo.Dto.UserNotificationDto;
 import com.pharmaflow.demo.Entities.User;
 import com.pharmaflow.demo.Entities.UserNotification;
+import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.UserNotificationMapper;
 import com.pharmaflow.demo.Repositories.UserNotificationRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +30,18 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .getAuthentication()
                 .getPrincipal();
         User user = userSecurity.getUser();
-        List<UserNotification> userNotifications = userNotificationRepository.findMyUnreadNotifications(user.getId());
+        List<UserNotification> userNotifications = userNotificationRepository.findMyNotifications(user.getId());
         return this.userNotificationMapper.toDto(userNotifications);
+    }
+
+    @Override
+    @Transactional
+    public void markNotificationRead(UUID notificationId) {
+        UserNotification userNotification = this.userNotificationRepository
+                .findById(notificationId)
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Notification Not Found")
+        );
+        userNotification.setIsRead(true);
     }
 }
