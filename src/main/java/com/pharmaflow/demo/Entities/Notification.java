@@ -23,4 +23,5 @@ public class Notification extends BaseEntity{
 
     @Enumerated(EnumType.STRING)
     private Notify status;
+
 }

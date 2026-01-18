@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -28,6 +29,10 @@ public abstract class Product extends BaseEntity {
 
     @Column(name = "expiry_date", nullable = false)
     protected LocalDateTime expiryDate;
+
+    @Column(name = "expired_status", nullable = false)
+    @ColumnDefault(value = "false")
+    private boolean expiredStatus = false;
 
     //price should not be null
     protected BigDecimal price;

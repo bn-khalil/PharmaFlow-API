@@ -34,6 +34,7 @@ public abstract class ProductDto {
         protected String image;
         protected long quantity;
         protected LocalDateTime expiryDate;
+        private boolean expiredStatus;
         protected BigDecimal price;
         protected String barcode;
         protected String category;

@@ -83,7 +83,6 @@ public class SaleServiceImpl implements SaleService {
                     .stockBefore(before)
                     .stockAfter(after)
                     .build();
-            this.notificationService.createNotification("new prodouct created", Notify.STOCK_ADDED, product);
             this.productService.reduceStock(productId, quantity);
             this.auditService.createAudit(auditDto);
             return newItem;

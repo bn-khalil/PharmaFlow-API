@@ -3,15 +3,16 @@ package com.pharmaflow.demo.Services.Impl;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Product;
+import com.pharmaflow.demo.Enums.Notify;
 import com.pharmaflow.demo.Exceptions.InvalidStockException;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.ProductMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
+import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,6 +25,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional(readOnly = true)
@@ -50,6 +52,7 @@ public class ProductServiceImpl implements ProductService {
                 () -> new ResourceNotFoundException("category not found!")
         );
         product.setCategory(category);
+        product.setExpiredStatus(false);
         product = this.productRepository.save(product);
         productDto.setId(product.getId());
         return productDto;
@@ -73,5 +76,22 @@ public class ProductServiceImpl implements ProductService {
             throw new InvalidStockException("Stock not enough for product: " + product.getName());
         product.setQuantity(product.getQuantity() - quantity);
         return this.productMapper.toDto(this.productRepository.save(product));
+    }
+
+    @Override
+    public void NotifyExpiredProducts() {
+        System.out.println("hello1");
+        List<Product> expiredProducts = this.productRepository.getExpiredProduct();
+        if (expiredProducts == null || expiredProducts.isEmpty())
+            return ;
+        for (Product product :  expiredProducts) {
+            String message = "Product " + product.getName() + " expired at " + product.getExpiryDate().toLocalDate();
+            this.notificationService.createNotification(message, Notify.EXPIRED, product);
+        }
+    }
+
+    @Override
+    public void NotifyNearExpireProducts() {
+        System.out.println("hello1");
     }
 }

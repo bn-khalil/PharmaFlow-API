@@ -28,6 +28,8 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void createNotification(String message, Notify notify, Product product) {
+        if (product.isExpiredStatus())
+                return ;
         Notification notification = new Notification();
         notification.setMessage(message);
         notification.setStatus(notify);
@@ -35,6 +37,8 @@ public class NotificationServiceImpl implements NotificationService {
 
         notification = this.notificationRepository.save(notification);
         broadCastToAllUsers(notification);
+        product.setExpiredStatus(true);
+        this.productRepository.save(product);
     }
 
     @Override

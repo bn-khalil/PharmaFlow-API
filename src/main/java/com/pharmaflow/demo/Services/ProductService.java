@@ -13,4 +13,6 @@ public interface ProductService {
     ProductDto createProduct(ProductDto productDto);
     ProductDto addStock(UUID productId, long quantity);
     ProductDto reduceStock(UUID productId, long quantity);
+    void NotifyExpiredProducts();
+    void NotifyNearExpireProducts();
 }
