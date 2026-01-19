@@ -14,5 +14,6 @@ public record SaleDto(
         BigDecimal totalAmount,
         String salerName,
         List<SaleItemsDto> saleItemsDtos,
+        long itemsNumber,
         LocalDateTime createAt) {
 }

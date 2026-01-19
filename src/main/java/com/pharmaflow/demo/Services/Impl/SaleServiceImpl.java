@@ -41,7 +41,7 @@ public class SaleServiceImpl implements SaleService {
     public SaleDto createSale(SaleDto saleDto) {
 
         if (saleDto == null || saleDto.saleItemsDtos() == null || saleDto.saleItemsDtos().isEmpty())
-            throw new ResourceNotFoundException("sale should have at least sale item");
+            throw new ResourceNotFoundException("sale should have at least one sale item");
 
         Sale sale = new Sale();
         BigDecimal[] total = {BigDecimal.ZERO};
@@ -50,6 +50,7 @@ public class SaleServiceImpl implements SaleService {
                 .getAuthentication().getPrincipal();
 
         sale.setSaler(userSecurity.getUser());
+        sale.setItemsNumber(saleDto.saleItemsDtos().size());
 
         Map<UUID, Long> mergedItems = new HashMap<>();
 
@@ -87,6 +88,7 @@ public class SaleServiceImpl implements SaleService {
                     .stockBefore(before)
                     .stockAfter(after)
                     .build();
+
             this.productService.reduceStock(productId, quantity);
             this.auditService.createAudit(auditDto);
             return newItem;
@@ -95,5 +97,26 @@ public class SaleServiceImpl implements SaleService {
         sale.setSaleItems(list);
         sale.setTotalAmount(total[0]);
         return this.saleMapper.toDto(this.saleRepository.save(sale));
+    }
+
+    @Override
+    public List<SaleDto> getAllSales() {
+        List<Sale> sales = this.saleRepository.findAll();
+        return this.saleMapper.toDto(sales);
+    }
+
+    @Override
+    public List<SaleDto> getAllSalesByUser() {
+        UserSecurity userSecurity = (UserSecurity)SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        List<Sale> sales = this.saleRepository.findAllBySalerOrderByCreatedAtDesc(userSecurity.getUser());
+        return this.saleMapper.toDto(sales);
+    }
+
+    @Override
+    public SaleDto getSaleById(UUID saleId) {
+        return this.saleMapper.toDto(this.saleRepository.findById(saleId).orElseThrow(
+                () -> new ResourceNotFoundException("Sale Not Found")
+        ));
     }
 }

@@ -76,11 +76,10 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product Not Found!")
         );
+
         long before = product.getQuantity();
-        long after = product.getQuantity() + quantity;
         product.setQuantity(product.getQuantity() + quantity);
-        String message = quantity + " units from " + product.getName() + " added to Stock";
-        this.notificationService.createNotification(message, Notify.STOCK_ADDED, product);
+        long after = product.getQuantity();
 
         UserSecurity userSecurity = (UserSecurity) SecurityContextHolder
                 .getContext()
@@ -88,18 +87,24 @@ public class ProductServiceImpl implements ProductService {
                 .getPrincipal();
 
         AuditDto auditDto = AuditDto.builder()
-                .action(Action.SALE)
+                .action(Action.STOCK)
                 .productName(product.getName())
                 .quantity(product.getQuantity())
                 .responsibleEmail(userSecurity.getUsername())
                 .stockBefore(before)
                 .stockAfter(after)
                 .build();
+        System.out.println(auditDto);
         this.auditService.createAudit(auditDto);
+
+        String message = quantity + " units from " + product.getName() + " added to Stock";
+        this.notificationService.createNotification(message, Notify.STOCK_ADDED, product);
+
         return this.productMapper.toDto(this.productRepository.save(product));
     }
 
     @Override
+    @Transactional
     public ProductDto reduceStock(UUID productId, long quantity) {
         Product product = this.productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product Not Found!")
