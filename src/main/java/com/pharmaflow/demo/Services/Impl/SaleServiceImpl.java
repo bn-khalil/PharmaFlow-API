@@ -39,6 +39,10 @@ public class SaleServiceImpl implements SaleService {
     @Override
     @Transactional
     public SaleDto createSale(SaleDto saleDto) {
+
+        if (saleDto == null || saleDto.saleItemsDtos() == null || saleDto.saleItemsDtos().isEmpty())
+            throw new ResourceNotFoundException("sale should have at least sale item");
+
         Sale sale = new Sale();
         BigDecimal[] total = {BigDecimal.ZERO};
 
@@ -63,6 +67,7 @@ public class SaleServiceImpl implements SaleService {
                     () -> new ResourceNotFoundException("Product Not Found!")
             );
 
+            System.out.println(product.getName() + "=========================================");
             BigDecimal itempTotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));
             total[0] = total[0].add(itempTotal);
 

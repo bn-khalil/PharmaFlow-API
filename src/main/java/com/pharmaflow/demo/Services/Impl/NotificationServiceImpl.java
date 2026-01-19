@@ -32,6 +32,8 @@ public class NotificationServiceImpl implements NotificationService {
                 return ;
         else if (notify == Notify.NEAR_EXPIRY && product.isNearExpiredStatus())
                 return ;
+        else if (notify == Notify.LOW_STOCK && product.isLowStock())
+            return ;
         Notification notification = new Notification();
         notification.setMessage(message);
         notification.setStatus(notify);
@@ -44,6 +46,8 @@ public class NotificationServiceImpl implements NotificationService {
             product.setExpiredStatus(true);
         else if (notify == Notify.NEAR_EXPIRY)
             product.setNearExpiredStatus(true);
+        else if (notify == Notify.LOW_STOCK)
+            product.setLowStock(true);
 
         this.productRepository.save(product);
     }

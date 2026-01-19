@@ -63,11 +63,14 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional
     public ProductDto addStock(UUID productId, long quantity) {
         Product product = this.productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product Not Found!")
         );
         product.setQuantity(product.getQuantity() + quantity);
+        String message = quantity + " units from " + product.getName() + " added to Stock";
+        this.notificationService.createNotification(message, Notify.STOCK_ADDED, product);
         return this.productMapper.toDto(this.productRepository.save(product));
     }
 
@@ -79,6 +82,10 @@ public class ProductServiceImpl implements ProductService {
         if (product.getQuantity() < quantity)
             throw new InvalidStockException("Stock not enough for product: " + product.getName());
         product.setQuantity(product.getQuantity() - quantity);
+        if (product.getQuantity() < 10) {
+            String message = product.getQuantity() + " items left, " + product.getName() + " low in stock";
+            this.notificationService.createNotification(message, Notify.LOW_STOCK, product);
+        }
         return this.productMapper.toDto(this.productRepository.save(product));
     }
 

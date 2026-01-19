@@ -2,6 +2,8 @@ package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Services.ProductService;
+import jakarta.validation.constraints.Positive;
+import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +31,16 @@ public class ProductController {
     }
 
     @PostMapping("/")
-    @PreAuthorize("")
     ResponseEntity<ProductDto> createMedicine(@RequestBody ProductDto productDto) {
         return ResponseEntity.status(HttpStatus.CREATED).body(this.productService.createProduct(productDto));
+    }
+
+    @PatchMapping("/{productId}/add-stock")
+    ResponseEntity<ProductDto> addStock(
+            @PathVariable(name = "productId") UUID productId,
+            @RequestParam @Positive long quantity) {
+        return ResponseEntity.status(HttpStatus.OK).body(
+                this.productService.addStock(productId, quantity)
+        );
     }
 }
