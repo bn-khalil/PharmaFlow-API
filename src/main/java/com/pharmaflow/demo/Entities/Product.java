@@ -34,6 +34,10 @@ public abstract class Product extends BaseEntity {
     @ColumnDefault(value = "false")
     private boolean expiredStatus = false;
 
+    @Column(name = "near_expired_status", nullable = false)
+    @ColumnDefault(value = "false")
+    private boolean nearExpiredStatus = false;
+
     //price should not be null
     protected BigDecimal price;
 

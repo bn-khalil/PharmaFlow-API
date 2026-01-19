@@ -15,6 +15,9 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -53,6 +56,7 @@ public class ProductServiceImpl implements ProductService {
         );
         product.setCategory(category);
         product.setExpiredStatus(false);
+        product.setNearExpiredStatus(false);
         product = this.productRepository.save(product);
         productDto.setId(product.getId());
         return productDto;
@@ -80,7 +84,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void NotifyExpiredProducts() {
-        System.out.println("hello1");
         List<Product> expiredProducts = this.productRepository.getExpiredProduct();
         if (expiredProducts == null || expiredProducts.isEmpty())
             return ;
@@ -92,6 +95,16 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public void NotifyNearExpireProducts() {
-        System.out.println("hello1");
+        LocalDateTime limitDate = LocalDateTime.now()
+                .plusDays(30)
+                .with(LocalTime.MAX);
+
+        List<Product> expiredProducts = this.productRepository.getNearExpiredProduct(limitDate);
+        if (expiredProducts == null || expiredProducts.isEmpty())
+            return ;
+        for (Product product :  expiredProducts) {
+            String message = "Product " + product.getName() + " will be expired at " + product.getExpiryDate().toLocalDate();
+            this.notificationService.createNotification(message, Notify.NEAR_EXPIRY, product);
+        }
     }
 }

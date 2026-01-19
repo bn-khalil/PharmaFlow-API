@@ -28,7 +28,9 @@ public class NotificationServiceImpl implements NotificationService {
     @Override
     @Transactional
     public void createNotification(String message, Notify notify, Product product) {
-        if (product.isExpiredStatus())
+        if (notify == Notify.EXPIRED && product.isExpiredStatus())
+                return ;
+        else if (notify == Notify.NEAR_EXPIRY && product.isNearExpiredStatus())
                 return ;
         Notification notification = new Notification();
         notification.setMessage(message);
@@ -37,7 +39,12 @@ public class NotificationServiceImpl implements NotificationService {
 
         notification = this.notificationRepository.save(notification);
         broadCastToAllUsers(notification);
-        product.setExpiredStatus(true);
+
+        if (notify == Notify.EXPIRED)
+            product.setExpiredStatus(true);
+        else if (notify == Notify.NEAR_EXPIRY)
+            product.setNearExpiredStatus(true);
+
         this.productRepository.save(product);
     }
 
