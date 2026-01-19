@@ -16,6 +16,7 @@ public interface UserNotificationRepository extends JpaRepository<UserNotificati
     AND un.isRead = false
     order by createdAt
     desc
+    limit 20
     """)
     List<UserNotification> findMyUnreadNotifications(@Param("userId") UUID userId);
 
@@ -25,6 +26,7 @@ public interface UserNotificationRepository extends JpaRepository<UserNotificati
     AND un.isRead = true
     order by createdAt
     desc
+    limit 20
     """)
     List<UserNotification> findMyReadNotifications(@Param("userId") UUID userId);
 

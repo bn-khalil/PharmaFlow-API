@@ -17,6 +17,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
     @Query("""
             select p from Product p
             LEFT join fetch p.category
+            order by createdAt desc
             """)
     List<Product> getAllProducts();
 
