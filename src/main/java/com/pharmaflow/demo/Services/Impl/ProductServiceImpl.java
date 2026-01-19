@@ -1,16 +1,23 @@
 package com.pharmaflow.demo.Services.Impl;
 
+import com.pharmaflow.demo.Dto.AuditDto;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Product;
+import com.pharmaflow.demo.Entities.User;
+import com.pharmaflow.demo.Enums.Action;
 import com.pharmaflow.demo.Enums.Notify;
 import com.pharmaflow.demo.Exceptions.InvalidStockException;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.ProductMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
+import com.pharmaflow.demo.Security.UserSecurity;
+import com.pharmaflow.demo.Services.AuditService;
+import com.pharmaflow.demo.Services.AuthService;
 import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +36,7 @@ public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
     private final NotificationService notificationService;
+    private final AuditService auditService;
 
     @Override
     @Transactional(readOnly = true)
@@ -68,9 +76,26 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product Not Found!")
         );
+        long before = product.getQuantity();
+        long after = product.getQuantity() + quantity;
         product.setQuantity(product.getQuantity() + quantity);
         String message = quantity + " units from " + product.getName() + " added to Stock";
         this.notificationService.createNotification(message, Notify.STOCK_ADDED, product);
+
+        UserSecurity userSecurity = (UserSecurity) SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        AuditDto auditDto = AuditDto.builder()
+                .action(Action.SALE)
+                .productName(product.getName())
+                .quantity(product.getQuantity())
+                .responsibleEmail(userSecurity.getUsername())
+                .stockBefore(before)
+                .stockAfter(after)
+                .build();
+        this.auditService.createAudit(auditDto);
         return this.productMapper.toDto(this.productRepository.save(product));
     }
 
