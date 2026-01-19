@@ -67,7 +67,6 @@ public class SaleServiceImpl implements SaleService {
                     () -> new ResourceNotFoundException("Product Not Found!")
             );
 
-            System.out.println(product.getName() + "=========================================");
             BigDecimal itempTotal = product.getPrice().multiply(BigDecimal.valueOf(quantity));
             total[0] = total[0].add(itempTotal);
 

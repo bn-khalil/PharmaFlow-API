@@ -17,13 +17,17 @@ public interface UserNotificationRepository extends JpaRepository<UserNotificati
     order by createdAt
     desc
     """)
-    List<UserNotification> findMyNotifications(@Param("userId") UUID userId);
+    List<UserNotification> findMyUnreadNotifications(@Param("userId") UUID userId);
 
     @Query("""
     select un from UserNotification un
     where un.user.id = :userId
+    AND un.isRead = true
     order by createdAt
     desc
     """)
-    List<UserNotification> findMyUnreadNotifications(@Param("userId") UUID userId);
+    List<UserNotification> findMyReadNotifications(@Param("userId") UUID userId);
+
+    List<UserNotification> findAllByUserId(@Param("userId") UUID userId);
+
 }

@@ -17,13 +17,24 @@ public class NotificationController {
     private final UserNotificationService userNotificationService;
 
     @GetMapping
-    public ResponseEntity<List<UserNotificationDto>> getMyNotifications() {
+    public ResponseEntity<List<UserNotificationDto>> getNotifications() {
         return ResponseEntity.ok().body(this.userNotificationService.getNotificationsForUser());
+    }
+
+    @GetMapping("/new")
+    public ResponseEntity<List<UserNotificationDto>> getNewNotifications() {
+        return ResponseEntity.ok().body(this.userNotificationService.getUnreadNotificationsForUser());
     }
 
     @PostMapping("/{notificationId}/read")
     public ResponseEntity<Void> readNotification(@PathVariable UUID notificationId) {
         this.userNotificationService.markNotificationRead(notificationId);
+        return ResponseEntity.noContent().build();
+    }
+
+    @PatchMapping("/read")
+    public ResponseEntity<Void> readAllNotification() {
+        this.userNotificationService.markAllNotificationRead();
         return ResponseEntity.noContent().build();
     }
 }

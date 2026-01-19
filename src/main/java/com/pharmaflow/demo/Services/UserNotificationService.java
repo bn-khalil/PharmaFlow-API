@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface UserNotificationService {
     List<UserNotificationDto> getNotificationsForUser();
     void markNotificationRead(UUID notificationId);
+    void markAllNotificationRead();
+    public List<UserNotificationDto> getUnreadNotificationsForUser();
 }

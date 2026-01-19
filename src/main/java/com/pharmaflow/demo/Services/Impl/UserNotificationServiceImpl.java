@@ -30,7 +30,21 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                 .getAuthentication()
                 .getPrincipal();
         User user = userSecurity.getUser();
-        List<UserNotification> userNotifications = userNotificationRepository.findMyNotifications(user.getId());
+        List<UserNotification> userNotifications = userNotificationRepository
+                .findAllByUserId(user.getId());
+        return this.userNotificationMapper.toDto(userNotifications);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserNotificationDto> getUnreadNotificationsForUser() {
+        UserSecurity userSecurity = (UserSecurity)SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User user = userSecurity.getUser();
+        List<UserNotification> userNotifications = userNotificationRepository
+                .findMyUnreadNotifications(user.getId());
         return this.userNotificationMapper.toDto(userNotifications);
     }
 
@@ -43,5 +57,18 @@ public class UserNotificationServiceImpl implements UserNotificationService {
                         () -> new ResourceNotFoundException("Notification Not Found")
         );
         userNotification.setIsRead(true);
+    }
+
+    @Override
+    @Transactional
+    public void markAllNotificationRead() {
+        UserSecurity userSecurity = (UserSecurity)SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User user = userSecurity.getUser();
+        List<UserNotification> userNotifications = userNotificationRepository
+                .findMyUnreadNotifications(user.getId());
+        userNotifications.forEach(userNotification -> userNotification.setIsRead(true));
     }
 }
