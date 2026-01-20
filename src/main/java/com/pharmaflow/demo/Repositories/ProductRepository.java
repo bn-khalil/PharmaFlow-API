@@ -1,5 +1,6 @@
 package com.pharmaflow.demo.Repositories;
 
+import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -14,10 +15,12 @@ import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
+    List<Product> findAllByCategoryOrderByCreatedAtDesc(Category category);
+
     @Query("""
             select p from Product p
             LEFT join fetch p.category
-            order by createdAt desc
+            order by p.createdAt desc
             """)
     List<Product> getAllProducts();
 
@@ -32,6 +35,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             SELECT p from Product p
             WHERE p.expiryDate <= CURRENT_DATE
             AND p.expiredStatus = false
+            order by p.createdAt desc
             """)
     List<Product> getExpiredProduct();
 
@@ -40,6 +44,7 @@ public interface ProductRepository extends JpaRepository<Product, UUID> {
             WHERE p.expiryDate
             BETWEEN CURRENT_DATE AND :leftDate
             AND p.nearExpiredStatus = false
+            order by p.createdAt desc
             """)
     List<Product> getNearExpiredProduct(@Param("leftDate") LocalDateTime leftDate);
 }

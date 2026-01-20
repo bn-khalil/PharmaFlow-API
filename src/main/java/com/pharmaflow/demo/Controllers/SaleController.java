@@ -17,7 +17,7 @@ public class SaleController {
 
     private final SaleService saleService;
 
-    @GetMapping("/all")
+    @GetMapping("/")
     public ResponseEntity<List<SaleDto>> listAllSales() {
         return ResponseEntity.status(HttpStatus.OK).body(this.saleService.getAllSales());
     }

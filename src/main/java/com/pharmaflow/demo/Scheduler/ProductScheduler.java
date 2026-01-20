@@ -10,12 +10,12 @@ import org.springframework.stereotype.Component;
 public class ProductScheduler {
     private final ProductService productService;
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     void runCheckForExpiredProduct() {
         this.productService.NotifyExpiredProducts();
     }
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     void runCheckForNearExpiredProduct() {
         this.productService.NotifyNearExpireProducts();
     }

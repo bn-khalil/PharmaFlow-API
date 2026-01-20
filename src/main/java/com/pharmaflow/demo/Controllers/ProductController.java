@@ -1,10 +1,15 @@
 package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.ProductDto;
+import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Services.ProductService;
 import jakarta.validation.constraints.Positive;
 import jakarta.websocket.server.PathParam;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -20,14 +25,26 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @GetMapping("/")
-    ResponseEntity<List<ProductDto>> getAllProducts() {
-        return ResponseEntity.ok().body(this.productService.getAllProducts());
+    @GetMapping
+    ResponseEntity<ResponsePage<ProductDto>> getAllProducts(
+            @PageableDefault(
+                    page = 0,
+                    size = 20,
+                    sort = "createdAt",
+                    direction = Sort.Direction.DESC) Pageable pageable
+    ) {
+        ResponsePage<ProductDto> responsePage = this.productService.getAllProducts(pageable);
+        return ResponseEntity.ok().body(responsePage);
     }
 
-    @GetMapping("/{product_id}")
-    ResponseEntity<ProductDto> getAllProducts(@PathVariable(name = "product_id") UUID product_id) {
-        return ResponseEntity.ok().body(this.productService.getProductById(product_id));
+    @GetMapping("/{productId}")
+    ResponseEntity<ProductDto> getAllProducts(@PathVariable(name = "productId") UUID productId) {
+        return ResponseEntity.ok().body(this.productService.getProductById(productId));
+    }
+
+    @GetMapping("/category/{categoryId}")
+    ResponseEntity<List<ProductDto>> getAllProductsByCategory(@PathVariable(name = "categoryId") UUID categoryId) {
+        return ResponseEntity.ok().body(this.productService.getProductByCategory(categoryId));
     }
 
     @PostMapping("/")
