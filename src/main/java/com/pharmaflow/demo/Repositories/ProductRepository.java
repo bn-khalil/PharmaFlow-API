@@ -2,6 +2,8 @@ package com.pharmaflow.demo.Repositories;
 
 import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Product;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,14 +17,7 @@ import java.util.UUID;
 
 @Repository
 public interface ProductRepository extends JpaRepository<Product, UUID> {
-    List<Product> findAllByCategoryOrderByCreatedAtDesc(Category category);
-
-    @Query("""
-            select p from Product p
-            LEFT join fetch p.category
-            order by p.createdAt desc
-            """)
-    List<Product> getAllProducts();
+    Page<Product> findAllByCategory(Category category, Pageable pageable);
 
     @Query("""
             SELECT p from Product p

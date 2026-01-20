@@ -18,12 +18,14 @@ public class NotificationController {
 
     @GetMapping
     public ResponseEntity<List<UserNotificationDto>> getNotifications() {
-        return ResponseEntity.ok().body(this.userNotificationService.getNotificationsForUser());
+        return ResponseEntity.ok()
+                .body(this.userNotificationService.getNotificationsForUser());
     }
 
     @GetMapping("/new")
     public ResponseEntity<List<UserNotificationDto>> getNewNotifications() {
-        return ResponseEntity.ok().body(this.userNotificationService.getUnreadNotificationsForUser());
+        return ResponseEntity.ok()
+                .body(this.userNotificationService.getUnreadNotificationsForUser());
     }
 
     @PostMapping("/{notificationId}/read")

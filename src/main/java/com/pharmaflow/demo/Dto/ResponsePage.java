@@ -1,6 +1,7 @@
 package com.pharmaflow.demo.Dto;
 
 import lombok.Builder;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -12,5 +13,17 @@ public record ResponsePage<T>(
         long totalItems,
         int pageSize,
         boolean hasNext,
-        boolean hasPrevious) {
+        boolean hasPrevious)
+{
+    public static <T> ResponsePage<T> fromPage (Page<T> page) {
+        return new ResponsePage<>(
+                page.getContent(),
+                page.getNumber(),
+                page.getTotalPages(),
+                page.getTotalElements(),
+                page.getSize(),
+                page.hasNext(),
+                page.hasPrevious()
+        );
+    }
 }

@@ -12,7 +12,7 @@ import java.util.UUID;
 @Service
 public interface ProductService {
     ResponsePage<ProductDto> getAllProducts(Pageable pageable);
-    List<ProductDto> getProductByCategory(UUID categoryId);
+    ResponsePage<ProductDto> getProductByCategory(UUID categoryId, Pageable pageable);
     ProductDto getProductById(UUID productId);
     ProductDto createProduct(ProductDto productDto);
     ProductDto addStock(UUID productId, long quantity);

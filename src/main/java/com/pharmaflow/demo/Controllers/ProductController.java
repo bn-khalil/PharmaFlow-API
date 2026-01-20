@@ -27,37 +27,41 @@ public class ProductController {
 
     @GetMapping
     ResponseEntity<ResponsePage<ProductDto>> getAllProducts(
-            @PageableDefault(
-                    page = 0,
-                    size = 20,
-                    sort = "createdAt",
-                    direction = Sort.Direction.DESC) Pageable pageable
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable
     ) {
         ResponsePage<ProductDto> responsePage = this.productService.getAllProducts(pageable);
         return ResponseEntity.ok().body(responsePage);
     }
 
     @GetMapping("/{productId}")
-    ResponseEntity<ProductDto> getAllProducts(@PathVariable(name = "productId") UUID productId) {
+    ResponseEntity<ProductDto> getAllProducts(
+            @PathVariable(name = "productId") UUID productId) {
         return ResponseEntity.ok().body(this.productService.getProductById(productId));
     }
 
     @GetMapping("/category/{categoryId}")
-    ResponseEntity<List<ProductDto>> getAllProductsByCategory(@PathVariable(name = "categoryId") UUID categoryId) {
-        return ResponseEntity.ok().body(this.productService.getProductByCategory(categoryId));
+    ResponseEntity<ResponsePage<ProductDto>> getAllProductsByCategory(
+            @PathVariable(name = "categoryId") UUID categoryId,
+            @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
+            Pageable pageable ) {
+        return ResponseEntity.ok()
+                .body(this.productService.getProductByCategory(categoryId, pageable));
     }
 
     @PostMapping("/")
-    ResponseEntity<ProductDto> createMedicine(@RequestBody ProductDto productDto) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.productService.createProduct(productDto));
+    ResponseEntity<ProductDto> createMedicine(
+            @RequestBody ProductDto productDto) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(this.productService.createProduct(productDto));
     }
 
     @PatchMapping("/{productId}/add-stock")
     ResponseEntity<ProductDto> addStock(
             @PathVariable(name = "productId") UUID productId,
             @RequestParam @Positive long quantity) {
-        return ResponseEntity.status(HttpStatus.OK).body(
-                this.productService.addStock(productId, quantity)
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(this.productService.addStock(productId, quantity)
         );
     }
 }

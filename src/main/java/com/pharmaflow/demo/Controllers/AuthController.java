@@ -22,11 +22,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody UserRegister userRegister) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(this.authService.register(userRegister));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(this.authService.register(userRegister));
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody UserLogin userLogin) {
-        return ResponseEntity.ok().body(this.authService.login(userLogin));
+        return ResponseEntity.ok()
+                .body(this.authService.login(userLogin));
     }
 }

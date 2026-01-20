@@ -1,11 +1,14 @@
 package com.pharmaflow.demo.Services.Impl;
 
 import com.pharmaflow.demo.Dto.AuditDto;
+import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Entities.Audit;
 import com.pharmaflow.demo.Mappers.AuditMapper;
 import com.pharmaflow.demo.Repositories.AuditRepository;
 import com.pharmaflow.demo.Services.AuditService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,9 +22,23 @@ public class AuditServiceImpl implements AuditService {
     private final AuditMapper auditMapper;
 
     @Override
-    public List<AuditDto> getAllAudits() {
-        List<Audit> audits = this.auditRepository.findAll();
-        return this.auditMapper.toDto(audits);
+    public AuditDto createAudit(AuditDto auditDto) {
+        Audit audit = new Audit();
+        audit.setResponsibleEmail(auditDto.responsibleEmail());
+        audit.setAction(auditDto.action());
+        audit.setQuantity(auditDto.quantity());
+        audit.setProductName(auditDto.productName());
+        audit.setStockBefore(auditDto.stockBefore());
+        audit.setStockAfter(auditDto.stockAfter());
+        return this.auditMapper.toDto(this.auditRepository.save(audit));
+    }
+
+    @Override
+    public ResponsePage<AuditDto> getAllAudits(Pageable pageable) {
+        Page<AuditDto> auditsDtoPage = this.auditRepository
+                .findAll(pageable)
+                .map(this.auditMapper::toDto);
+        return ResponsePage.fromPage(auditsDtoPage);
     }
 
     @Override
@@ -34,15 +51,4 @@ public class AuditServiceImpl implements AuditService {
         return null;
     }
 
-    @Override
-    public AuditDto createAudit(AuditDto auditDto) {
-        Audit audit = new Audit();
-        audit.setResponsibleEmail(auditDto.responsibleEmail());
-        audit.setAction(auditDto.action());
-        audit.setQuantity(auditDto.quantity());
-        audit.setProductName(auditDto.productName());
-        audit.setStockBefore(auditDto.stockBefore());
-        audit.setStockAfter(auditDto.stockAfter());
-        return this.auditMapper.toDto(this.auditRepository.save(audit));
-    }
 }

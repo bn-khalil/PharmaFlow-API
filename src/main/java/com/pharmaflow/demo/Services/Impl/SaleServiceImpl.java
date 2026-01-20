@@ -1,22 +1,23 @@
 package com.pharmaflow.demo.Services.Impl;
 
 import com.pharmaflow.demo.Dto.AuditDto;
+import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Dto.SaleDto;
 import com.pharmaflow.demo.Dto.SaleItemsDto;
 import com.pharmaflow.demo.Entities.Product;
 import com.pharmaflow.demo.Entities.Sale;
 import com.pharmaflow.demo.Entities.SaleItem;
 import com.pharmaflow.demo.Enums.Action;
-import com.pharmaflow.demo.Enums.Notify;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.SaleMapper;
 import com.pharmaflow.demo.Repositories.ProductRepository;
 import com.pharmaflow.demo.Repositories.SaleRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuditService;
-import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
 import com.pharmaflow.demo.Services.SaleService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -34,7 +35,6 @@ public class SaleServiceImpl implements SaleService {
     private final ProductService productService;
     private final SaleMapper saleMapper;
     private final AuditService auditService;
-    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -100,17 +100,21 @@ public class SaleServiceImpl implements SaleService {
     }
 
     @Override
-    public List<SaleDto> getAllSales() {
-        List<Sale> sales = this.saleRepository.findAll();
-        return this.saleMapper.toDto(sales);
+    public ResponsePage<SaleDto> getAllSales(Pageable pageable) {
+        Page<SaleDto> salesDtoPage = this.saleRepository
+                .findAll(pageable)
+                .map(this.saleMapper::toDto);
+        return ResponsePage.fromPage(salesDtoPage);
     }
 
     @Override
-    public List<SaleDto> getAllSalesByUser() {
+    public ResponsePage<SaleDto> getAllSalesByUser(Pageable pageable) {
         UserSecurity userSecurity = (UserSecurity)SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
-        List<Sale> sales = this.saleRepository.findAllBySalerOrderByCreatedAtDesc(userSecurity.getUser());
-        return this.saleMapper.toDto(sales);
+        Page<SaleDto> salesDtoPage = this.saleRepository
+                .findAllBySaler(userSecurity.getUser(), pageable)
+                .map(this.saleMapper::toDto);
+        return ResponsePage.fromPage(salesDtoPage);
     }
 
     @Override

@@ -5,18 +5,15 @@ import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Product;
-import com.pharmaflow.demo.Entities.User;
 import com.pharmaflow.demo.Enums.Action;
 import com.pharmaflow.demo.Enums.Notify;
 import com.pharmaflow.demo.Exceptions.InvalidStockException;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.ProductMapper;
-import com.pharmaflow.demo.Mappers.ResponsePageMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuditService;
-import com.pharmaflow.demo.Services.AuthService;
 import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
 import org.springframework.data.domain.Page;
@@ -26,7 +23,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
@@ -41,7 +37,6 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final NotificationService notificationService;
     private final AuditService auditService;
-    private final ResponsePageMapper responsePageMapper;
 
     @Override
     @Transactional(readOnly = true)
@@ -49,19 +44,21 @@ public class ProductServiceImpl implements ProductService {
         Page<ProductDto> productDtoPage = this.productRepository
                 .findAll(pageable)
                 .map(this.productMapper::toDto);
-        return this.responsePageMapper.toResponsePage(productDtoPage);
+        return ResponsePage.fromPage(productDtoPage);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductDto> getProductByCategory(UUID categoryId) {
+    public ResponsePage<ProductDto> getProductByCategory(UUID categoryId, Pageable pageable) {
         Category category = this.categoryRepository.findById(categoryId).orElseThrow(
                 () -> new ResourceNotFoundException("Category Not Found")
         );
-        return this.productMapper.toDtoList(
-                this.productRepository
-                        .findAllByCategoryOrderByCreatedAtDesc(category)
-        );
+
+        Page<ProductDto> productDtoPage = this.productRepository
+                .findAllByCategory(category, pageable)
+                .map(this.productMapper::toDto);
+        return ResponsePage.fromPage(productDtoPage);
+
     }
 
     @Override
