@@ -15,11 +15,18 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "products")
+@Table(name = "products", indexes = {
+        @Index(name = "index_barcode", columnList = "barcode"),
+        @Index(name = "index_name", columnList = "name")
+},
+        uniqueConstraints = {
+            @UniqueConstraint(columnNames = {"name", "category_id", "size", "dosage_unit"})
+        }
+)
 @Inheritance(strategy = InheritanceType.JOINED)
 public abstract class Product extends BaseEntity {
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     protected String name;
 
     @Column(nullable = false)
@@ -52,5 +59,4 @@ public abstract class Product extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     protected Category category;
-
 }

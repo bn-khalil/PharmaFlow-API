@@ -1,39 +1,21 @@
 package com.pharmaflow.demo;
 
-import com.github.javafaker.Faker;
-import com.pharmaflow.demo.Dto.MedicineDto;
-import com.pharmaflow.demo.Dto.ProductDto;
-import com.pharmaflow.demo.Entities.*;
 import com.pharmaflow.demo.Mappers.SaleItemMapper;
 import com.pharmaflow.demo.Mappers.SaleMapper;
 import com.pharmaflow.demo.Repositories.*;
 import com.pharmaflow.demo.Services.ProductService;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.SharedCacheMode;
-import jakarta.persistence.ValidationMode;
-import jakarta.persistence.spi.ClassTransformer;
-import jakarta.persistence.spi.PersistenceUnitInfo;
-import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import javax.sql.DataSource;
-import java.math.BigDecimal;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Properties;
-import java.util.UUID;
 
 @SpringBootApplication
-public class DemoApplication {
+public class PharmaFlowApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DemoApplication.class, args);
+		SpringApplication.run(PharmaFlowApplication.class, args);
 	}
 
 	@Bean

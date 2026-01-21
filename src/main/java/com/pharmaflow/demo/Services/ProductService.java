@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Service
 public interface ProductService {
-    ResponsePage<ProductDto> getAllProducts(Pageable pageable);
+    ResponsePage<ProductDto> getAllProducts(String search, Long size, Long dosage, Pageable pageable);
     ResponsePage<ProductDto> getProductByCategory(UUID categoryId, Pageable pageable);
     ProductDto getProductById(UUID productId);
     ProductDto createProduct(ProductDto productDto);

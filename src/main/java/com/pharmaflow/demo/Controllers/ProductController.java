@@ -27,10 +27,13 @@ public class ProductController {
 
     @GetMapping
     ResponseEntity<ResponsePage<ProductDto>> getAllProducts(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) Long size,
+            @RequestParam(required = false) Long dosage,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-        ResponsePage<ProductDto> responsePage = this.productService.getAllProducts(pageable);
+        ResponsePage<ProductDto> responsePage = this.productService.getAllProducts(q, size, dosage, pageable);
         return ResponseEntity.ok().body(responsePage);
     }
 

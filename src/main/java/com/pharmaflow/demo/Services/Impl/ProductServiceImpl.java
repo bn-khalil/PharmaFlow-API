@@ -12,12 +12,14 @@ import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.ProductMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
+import com.pharmaflow.demo.Repositories.ProductSpecifications;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuditService;
 import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -40,10 +42,24 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponsePage<ProductDto> getAllProducts(Pageable pageable) {
+    public ResponsePage<ProductDto> getAllProducts(String search, Long size, Long dosage, Pageable pageable) {
+
+        Specification<Product> spec = Specification.<Product>where(
+                (root, query, cb) -> cb.conjunction()
+        );
+
+        if (search != null && !search.isEmpty())
+                spec = spec.and(ProductSpecifications.hasName(search))
+                        .or(ProductSpecifications.hasQrcode(search));
+        if (size != null)
+            spec = spec.and(ProductSpecifications.hasSize(size));
+        if (dosage != null)
+            spec = spec.and(ProductSpecifications.hasDosageUnit(dosage));
+
         Page<ProductDto> productDtoPage = this.productRepository
-                .findAll(pageable)
+                .findAll(spec, pageable)
                 .map(this.productMapper::toDto);
+
         return ResponsePage.fromPage(productDtoPage);
     }
 
