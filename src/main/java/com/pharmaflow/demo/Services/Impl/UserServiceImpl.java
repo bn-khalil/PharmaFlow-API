@@ -7,6 +7,7 @@ import com.pharmaflow.demo.Mappers.UserMapper;
 import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,18 +22,32 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
 
     @Override
+    @Transactional(readOnly = true)
+    public List<UserDto> getAllUsers(String search) {
+
+        if (search == null || search.trim().isEmpty()) {
+            return userMapper.toDto(userRepository.findAll());
+        }
+
+        String pattern = "%" + search.toLowerCase() + "%";
+
+        Specification<User> spec = (root, query, criteriaBuilder)->{
+            return criteriaBuilder.or(
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), pattern),
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), pattern)
+            );
+        };
+
+        List<User> users = this.userRepository.findAll(spec);
+        return this.userMapper.toDto(users);
+    }
+
+    @Override
     public UserDto getUserById(UUID userId) {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("User Not Found")
         );
         return this.userMapper.toDto(user);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<UserDto> getAllUsers() {
-        List<User> users = this.userRepository.findAll();
-        return this.userMapper.toDto(users);
     }
 
     @Override

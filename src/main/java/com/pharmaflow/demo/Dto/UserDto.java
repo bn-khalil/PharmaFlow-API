@@ -1,8 +1,8 @@
 package com.pharmaflow.demo.Dto;
 
-import com.pharmaflow.demo.Enums.Role;
 import lombok.Builder;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
@@ -11,5 +11,8 @@ public record UserDto(
         String firstName,
         String lastName,
         String email,
-        String role) {
+        String role,
+        LocalDateTime createAt,
+        LocalDateTime updateAt
+) {
 }

@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public interface UserService {
     UserDto getUserById(UUID userId);
-    List<UserDto> getAllUsers();
+    List<UserDto> getAllUsers(String search);
     List<UserDto> getPharmacists();
     List<UserDto> getAdmins();
     void addUser(UserDto userDto);

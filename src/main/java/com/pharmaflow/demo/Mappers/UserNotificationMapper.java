@@ -1,14 +1,11 @@
 package com.pharmaflow.demo.Mappers;
 
 import com.pharmaflow.demo.Dto.UserNotificationDto;
-import com.pharmaflow.demo.Entities.Notification;
 import com.pharmaflow.demo.Entities.UserNotification;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface UserNotificationMapper {
