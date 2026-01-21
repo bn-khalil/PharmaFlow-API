@@ -12,7 +12,7 @@ import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.ProductMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
-import com.pharmaflow.demo.Repositories.ProductSpecifications;
+import com.pharmaflow.demo.Repositories.Specifications.ProductSpecifications;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuditService;
 import com.pharmaflow.demo.Services.NotificationService;

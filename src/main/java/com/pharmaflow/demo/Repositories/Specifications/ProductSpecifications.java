@@ -1,4 +1,4 @@
-package com.pharmaflow.demo.Repositories;
+package com.pharmaflow.demo.Repositories.Specifications;
 
 import com.pharmaflow.demo.Entities.MedicalSupple;
 import com.pharmaflow.demo.Entities.Medicine;

@@ -5,12 +5,16 @@ import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Entities.Audit;
 import com.pharmaflow.demo.Mappers.AuditMapper;
 import com.pharmaflow.demo.Repositories.AuditRepository;
+import com.pharmaflow.demo.Repositories.Specifications.AuditSpecifications;
 import com.pharmaflow.demo.Services.AuditService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -34,9 +38,20 @@ public class AuditServiceImpl implements AuditService {
     }
 
     @Override
-    public ResponsePage<AuditDto> getAllAudits(Pageable pageable) {
+    public ResponsePage<AuditDto> getAllAudits(String q, LocalDate at, Pageable pageable) {
+
+        Specification<Audit> spec = Specification.where(
+                (root, query, criteriaBuilder)
+                        -> criteriaBuilder.conjunction()
+        );
+
+        if (q != null)
+            spec = spec.and(AuditSpecifications.hasProductName(q))
+                    .or(AuditSpecifications.hasEmail(q));
+        if (at != null)
+            spec = spec.and(AuditSpecifications.atDate(at));
         Page<AuditDto> auditsDtoPage = this.auditRepository
-                .findAll(pageable)
+                .findAll(spec, pageable)
                 .map(this.auditMapper::toDto);
         return ResponsePage.fromPage(auditsDtoPage);
     }

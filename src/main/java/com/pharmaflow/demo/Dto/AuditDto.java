@@ -15,7 +15,7 @@ public record AuditDto(
         Action action,
         long stockBefore,
         long stockAfter,
-        LocalDateTime createAt,
+        LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
 }

@@ -7,15 +7,18 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-import java.util.UUID;
-
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "audits")
+@Table(name = "audits",
+        indexes = {
+                @Index(name = "index_audit_product_name", columnList = "productName"),
+                @Index(name = "index_audit_responsible_email", columnList = "responsibleEmail"),
+                @Index(name = "index_audit_created_at", columnList = "createdAt"),
+        }
+)
 public class Audit extends BaseEntity {
     @Column(nullable = false)
     private String productName;

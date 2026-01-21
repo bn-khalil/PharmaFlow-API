@@ -11,19 +11,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+
 @RestController
-@RequestMapping("/audit")
 @RequiredArgsConstructor
+@RequestMapping("/audit")
+@PreAuthorize("hasRole('ADMIN')")
 public class AuditController {
     private final AuditService auditService;
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ResponsePage<AuditDto>> getAllAudits(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) LocalDate at,
             @PageableDefault(sort = "createdAt", direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
         return ResponseEntity.status(HttpStatus.OK)
-                .body(this.auditService.getAllAudits(pageable));
+                .body(this.auditService.getAllAudits(q, at, pageable));
     }
 }
