@@ -1,6 +1,7 @@
 package com.pharmaflow.demo.Services;
 
 import com.pharmaflow.demo.Dto.UserDto;
+import com.pharmaflow.demo.Dto.UserRegister;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,6 +12,6 @@ public interface UserService {
     List<UserDto> getAllUsers(String search);
     List<UserDto> getPharmacists();
     List<UserDto> getAdmins();
-    void addUser(UserDto userDto);
+    void editUser(UserRegister userRegister);
     void deleteUser(UserDto userDto);
 }

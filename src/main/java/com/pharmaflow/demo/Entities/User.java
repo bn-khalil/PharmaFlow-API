@@ -28,6 +28,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private String password;
 
+    @ColumnDefault(value = "false")
+    private boolean isPasswordChanged;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @ColumnDefault(value = "'PHARMACIST'")

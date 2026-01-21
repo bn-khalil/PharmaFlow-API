@@ -1,6 +1,7 @@
 package com.pharmaflow.demo.Services.Impl;
 
 import com.pharmaflow.demo.Dto.UserDto;
+import com.pharmaflow.demo.Dto.UserRegister;
 import com.pharmaflow.demo.Entities.User;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.UserMapper;
@@ -61,7 +62,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addUser(UserDto userDto) {
+    public void editUser(UserRegister userRegister) {
 
     }
 
