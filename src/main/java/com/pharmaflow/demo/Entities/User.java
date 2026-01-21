@@ -6,6 +6,7 @@ import lombok.Setter;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
+import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Setter
@@ -28,6 +29,7 @@ public class User extends BaseEntity {
     private String password;
 
     @Column(nullable = false)
-//    @Enumerated(EnumType.STRING)
-    private Role role;
+    @Enumerated(EnumType.STRING)
+    @ColumnDefault(value = "'PHARMACIST'")
+    private Role role = Role.PHARMACIST;
 }

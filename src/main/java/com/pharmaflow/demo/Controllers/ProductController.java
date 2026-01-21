@@ -53,6 +53,7 @@ public class ProductController {
     }
 
     @PostMapping("/")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ProductDto> createMedicine(
             @RequestBody ProductDto productDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -60,6 +61,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{productId}/add-stock")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ProductDto> addStock(
             @PathVariable(name = "productId") UUID productId,
             @RequestParam @Positive long quantity) {
