@@ -113,21 +113,7 @@ public class ProductServiceImpl implements ProductService {
         product.setQuantity(product.getQuantity() + quantity);
         long after = product.getQuantity();
 
-        UserSecurity userSecurity = (UserSecurity) SecurityContextHolder
-                .getContext()
-                .getAuthentication()
-                .getPrincipal();
-
-        AuditDto auditDto = AuditDto.builder()
-                .action(Action.STOCK)
-                .productName(product.getName())
-                .quantity(product.getQuantity())
-                .responsibleEmail(userSecurity.getUsername())
-                .stockBefore(before)
-                .stockAfter(after)
-                .build();
-        System.out.println(auditDto);
-        this.auditService.createAudit(auditDto);
+        this.auditService.createAudit(product.getName(), product.getQuantity(), Action.STOCK, before, after);
 
         String message = quantity + " units from " + product.getName() + " added to Stock";
         this.notificationService.createNotification(message, Notify.STOCK_ADDED, product);

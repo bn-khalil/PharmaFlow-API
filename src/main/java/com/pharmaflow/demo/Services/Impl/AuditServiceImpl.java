@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Services.Impl;
 import com.pharmaflow.demo.Dto.AuditDto;
 import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Entities.Audit;
+import com.pharmaflow.demo.Enums.Action;
 import com.pharmaflow.demo.Mappers.AuditMapper;
 import com.pharmaflow.demo.Repositories.AuditRepository;
 import com.pharmaflow.demo.Repositories.Specifications.AuditSpecifications;
@@ -11,10 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -26,15 +27,23 @@ public class AuditServiceImpl implements AuditService {
     private final AuditMapper auditMapper;
 
     @Override
-    public AuditDto createAudit(AuditDto auditDto) {
+    public void createAudit(
+            String productName,
+            long quantity,
+            Action action,
+            long before,
+            long after
+    ) {
+        String currentUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+
         Audit audit = new Audit();
-        audit.setResponsibleEmail(auditDto.responsibleEmail());
-        audit.setAction(auditDto.action());
-        audit.setQuantity(auditDto.quantity());
-        audit.setProductName(auditDto.productName());
-        audit.setStockBefore(auditDto.stockBefore());
-        audit.setStockAfter(auditDto.stockAfter());
-        return this.auditMapper.toDto(this.auditRepository.save(audit));
+        audit.setResponsibleEmail(currentUserEmail);
+        audit.setAction(action);
+        audit.setQuantity(quantity);
+        audit.setProductName(productName);
+        audit.setStockBefore(before);
+        audit.setStockAfter(after);
+        this.auditRepository.save(audit);
     }
 
     @Override

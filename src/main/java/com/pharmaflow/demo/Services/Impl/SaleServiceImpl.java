@@ -80,17 +80,9 @@ public class SaleServiceImpl implements SaleService {
             long before = product.getQuantity();
             long after = before - quantity;
 
-            AuditDto auditDto = AuditDto.builder()
-                    .action(Action.SALE)
-                    .productName(newItem.getProduct().getName())
-                    .quantity(newItem.getQuantity())
-                    .responsibleEmail(userSecurity.getUsername())
-                    .stockBefore(before)
-                    .stockAfter(after)
-                    .build();
-
             this.productService.reduceStock(productId, quantity);
-            this.auditService.createAudit(auditDto);
+            this.auditService.createAudit(newItem.getProduct().getName(),
+                    newItem.getQuantity(), Action.SALE, before, after);
             return newItem;
         }).toList();
 
