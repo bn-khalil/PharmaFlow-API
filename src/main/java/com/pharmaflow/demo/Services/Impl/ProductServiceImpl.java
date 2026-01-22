@@ -1,6 +1,5 @@
 package com.pharmaflow.demo.Services.Impl;
 
-import com.pharmaflow.demo.Dto.AuditDto;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Entities.Category;
@@ -13,14 +12,12 @@ import com.pharmaflow.demo.Mappers.ProductMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
 import com.pharmaflow.demo.Repositories.Specifications.ProductSpecifications;
-import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuditService;
 import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,7 +39,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponsePage<ProductDto> getAllProducts(String search, Long size, Long dosage, Pageable pageable) {
+    public ResponsePage<ProductDto> getAllProducts(String search, Long size, Long dosage, boolean archived, Pageable pageable) {
 
         Specification<Product> spec = Specification.<Product>where(
                 (root, query, cb) -> cb.conjunction()
@@ -55,6 +52,11 @@ public class ProductServiceImpl implements ProductService {
             spec = spec.and(ProductSpecifications.hasSize(size));
         if (dosage != null)
             spec = spec.and(ProductSpecifications.hasDosageUnit(dosage));
+
+        if (archived)
+            spec = spec.and(ProductSpecifications.archived(!archived));
+        else
+            spec = spec.and(ProductSpecifications.archived(!archived));
 
         Page<ProductDto> productDtoPage = this.productRepository
                 .findAll(spec, pageable)
@@ -97,6 +99,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         product.setExpiredStatus(false);
         product.setNearExpiredStatus(false);
+        product.setActive(true);
         product = this.productRepository.save(product);
         productDto.setId(product.getId());
         return productDto;
@@ -158,8 +161,36 @@ public class ProductServiceImpl implements ProductService {
         if (expiredProducts == null || expiredProducts.isEmpty())
             return ;
         for (Product product :  expiredProducts) {
-            String message = "Product " + product.getName() + " will be expired at " + product.getExpiryDate().toLocalDate();
+            String message = "Product " + product.getName() +
+                    " will be expired at " +
+                    product.getExpiryDate().toLocalDate();
             this.notificationService.createNotification(message, Notify.NEAR_EXPIRY, product);
         }
+    }
+
+    @Override
+    public ProductDto editProduct(UUID productId, ProductDto productDto) {
+        Product product = this.productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product Not Found!")
+        );
+        this.productMapper.editProduct(productDto, product);
+        if (productDto.getCategory() != null
+                && !productDto.getCategory().trim().isEmpty()
+                && !productDto.getCategory().equals(product.getCategory().getName())) {
+            Category category = this.categoryRepository.findByName(productDto.getCategory()).orElseThrow(
+                    () -> new ResourceNotFoundException("Category Not Found!")
+            );
+            product.setCategory(category);
+        }
+        return this.productMapper.toDto(product);
+    }
+
+    @Override
+    @Transactional
+    public void toggleProduct(UUID productId) {
+        Product product = this.productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product Not Found")
+        );
+        product.setActive(!product.isActive());
     }
 }

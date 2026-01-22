@@ -6,8 +6,7 @@ import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Entities.MedicalSupple;
 import com.pharmaflow.demo.Entities.Medicine;
 import com.pharmaflow.demo.Entities.Product;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import org.mapstruct.*;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -51,4 +50,9 @@ public interface ProductMapper {
     List<ProductDto> toDtoList(List<Product> products);
 
     List<Product> toEntityList(List<ProductDto> pdtos);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "category", ignore = true)
+    @Mapping(target = "id", ignore = true)
+    void editProduct(ProductDto productDto, @MappingTarget Product product);
 }

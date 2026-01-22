@@ -2,14 +2,10 @@ package com.pharmaflow.demo.Dto;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
-import com.pharmaflow.demo.Entities.Category;
-import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -36,6 +32,7 @@ public abstract class ProductDto {
         protected LocalDateTime expiryDate;
         private boolean expiredStatus;
         private boolean nearExpiredStatus;
+        private boolean active;
         protected BigDecimal price;
         protected String barcode;
         protected String category;

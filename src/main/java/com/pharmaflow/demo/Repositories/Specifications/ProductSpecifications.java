@@ -32,4 +32,9 @@ public class ProductSpecifications {
         return (root, query, criteriaBuilder)
                 -> criteriaBuilder.equal(criteriaBuilder.treat(root, Medicine.class).get("dosageUnit"), hasDosageUnit);
     }
+
+    public static Specification<Product> archived(boolean isArchived) {
+        return (root, query, criteriaBuilder)
+                -> criteriaBuilder.equal(root.get("active"), isArchived);
+    }
 }

@@ -49,7 +49,10 @@ public abstract class Product extends BaseEntity {
     @ColumnDefault(value = "false")
     private boolean LowStock = false;
 
-    //price should not be null
+    @Column(name = "active", nullable = false)
+    @ColumnDefault(value = "true")
+    private boolean active = true;
+
     @Column(nullable = false)
     protected BigDecimal price;
 
