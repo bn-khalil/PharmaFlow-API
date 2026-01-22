@@ -32,6 +32,14 @@ public class User extends BaseEntity {
     private boolean isPasswordChanged;
 
     @Column(nullable = false)
+    @ColumnDefault(value = "false")
+    private boolean isFirstAdmin = false;
+
+    @Column(nullable = false)
+    @ColumnDefault(value = "true")
+    private boolean active = true;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @ColumnDefault(value = "'PHARMACIST'")
     private Role role = Role.PHARMACIST;

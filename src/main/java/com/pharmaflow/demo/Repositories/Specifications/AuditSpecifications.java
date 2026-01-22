@@ -11,15 +11,19 @@ public class AuditSpecifications {
     public static Specification<Audit> hasProductName(String productName) {
         if (productName == null || productName.isEmpty())
             return null;
+        String keywordSearch = "%" + productName.trim().toLowerCase() + "%";
+
         return (root, query, criteriaBuilder)
-                -> criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), "%" + productName + "%");
+                -> criteriaBuilder.like(criteriaBuilder.lower(root.get("productName")), keywordSearch);
     }
 
     public static Specification<Audit> hasEmail(String email) {
         if (email == null || email.isEmpty())
             return null;
+        String keywordSearch = "%" + email.trim().toLowerCase() + "%";
+
         return (root, query, criteriaBuilder)
-                -> criteriaBuilder.like(criteriaBuilder.lower(root.get("responsibleEmail")), "%" + email + "%");
+                -> criteriaBuilder.like(criteriaBuilder.lower(root.get("responsibleEmail")), keywordSearch);
     }
 
     public static Specification<Audit> atDate(LocalDate at) {

@@ -29,6 +29,8 @@ public class AdminInitializer implements CommandLineRunner {
             admin.setEmail("admin@gmail.com");
             admin.setPassword(passwordEncoder.encode("admin123"));
             admin.setRole(Role.ADMIN);
+            admin.setActive(true);
+            admin.setFirstAdmin(true);
             this.userRepository.save(admin);
             System.out.println("✅ Root Admin created: admin@pharmaflow.com / Admin@123");
         }

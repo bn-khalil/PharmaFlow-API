@@ -1,14 +1,19 @@
 package com.pharmaflow.demo.Services.Impl;
 
+import com.pharmaflow.demo.Dto.EditUser;
 import com.pharmaflow.demo.Dto.UserDto;
-import com.pharmaflow.demo.Dto.UserRegister;
 import com.pharmaflow.demo.Entities.User;
+import com.pharmaflow.demo.Enums.Role;
+import com.pharmaflow.demo.Exceptions.BadRequestException;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.UserMapper;
+import com.pharmaflow.demo.Repositories.Specifications.UserSpecifications;
 import com.pharmaflow.demo.Repositories.UserRepository;
+import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,21 +29,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserDto> getAllUsers(String search) {
+    public List<UserDto> getAllUsers(String search, String role) {
 
-        if (search == null || search.trim().isEmpty()) {
-            return userMapper.toDto(userRepository.findAll());
-        }
+        Specification<User> spec = Specification.where(
+                (root, query, criteriaBuilder)
+                        -> criteriaBuilder.conjunction()
+        );
 
-        String pattern = "%" + search.toLowerCase() + "%";
-
-        Specification<User> spec = (root, query, criteriaBuilder)->{
-            return criteriaBuilder.or(
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")), pattern),
-                    criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")), pattern)
-            );
-        };
-
+        if (search != null && !search.trim().isEmpty())
+            spec = spec.and(UserSpecifications.hasFirstName(search))
+                    .or(UserSpecifications.hasFirstName(search));
+        if (role != null && !role.trim().isEmpty())
+            spec = spec.and(UserSpecifications.hasRole(role));
         List<User> users = this.userRepository.findAll(spec);
         return this.userMapper.toDto(users);
     }
@@ -52,22 +54,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserDto> getPharmacists() {
-        return List.of();
+    @Transactional
+    public UserDto editUser(EditUser editUser) {
+        UserSecurity userService = (UserSecurity)SecurityContextHolder.
+                getContext()
+                .getAuthentication()
+                .getPrincipal();
+
+        User userTarget = userRepository.findById(userService.getUser().getId()).orElseThrow(
+                () -> new ResourceNotFoundException("User not Found!")
+        );
+
+        // this trick here is for update only
+        // the attributes that changed in EditUser dto
+        userMapper.editDtoToEntity(editUser, userTarget);
+
+        return this.userMapper.toDto(this.userRepository.save(userTarget));
     }
 
     @Override
-    public List<UserDto> getAdmins() {
-        return List.of();
-    }
+    @Transactional
+    public void changeUserStatus(UUID userId) {
+        UserSecurity userService = (UserSecurity)SecurityContextHolder.
+                getContext()
+                .getAuthentication()
+                .getPrincipal();
+        User user = userService.getUser();
 
-    @Override
-    public void editUser(UserRegister userRegister) {
+        User userTarget = userRepository.findById(userId).orElseThrow(
+                () -> new ResourceNotFoundException("User not Found!")
+        );
 
-    }
+        if (user.getRole() != Role.ADMIN || userTarget.isFirstAdmin())
+            throw new BadRequestException("Cannot disable this Account");
 
-    @Override
-    public void deleteUser(UserDto userDto) {
-
+        userTarget.setActive(!userTarget.isActive());
     }
 }

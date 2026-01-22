@@ -12,7 +12,8 @@ public record UserDto(
         String lastName,
         String email,
         String role,
-        LocalDateTime createAt,
-        LocalDateTime updateAt
+        boolean active,
+        LocalDateTime createdAt,
+        LocalDateTime updatedAt
 ) {
 }
