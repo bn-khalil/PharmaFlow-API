@@ -1,14 +1,18 @@
 package com.pharmaflow.demo.Services.Impl;
 
 import com.pharmaflow.demo.Dto.CategoryDto;
+import com.pharmaflow.demo.Entities.Category;
+import com.pharmaflow.demo.Exceptions.BadRequestException;
+import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.CategoryMapper;
 import com.pharmaflow.demo.Repositories.CategoryRepository;
+import com.pharmaflow.demo.Repositories.ProductRepository;
 import com.pharmaflow.demo.Services.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -17,6 +21,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     private final CategoryMapper categoryMapper;
     private final CategoryRepository categoryRepository;
+    private final ProductRepository productRepository;
 
     @Override
     public CategoryDto createCategory(CategoryDto categoryDto) {
@@ -29,11 +34,27 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public List<CategoryDto> getAllCategories() {
-        return List.of();
+        return this.categoryMapper.toDto(this.categoryRepository.findAll());
     }
 
     @Override
-    public Optional<CategoryDto> getCategoryById(UUID categoryId) {
-        return Optional.empty();
+    public CategoryDto getCategoryById(UUID categoryId) {
+        return this.categoryMapper.toDto(
+                this.categoryRepository.findById(categoryId).orElseThrow(
+                () -> new ResourceNotFoundException("Category Not Found!")
+        ));
+    }
+
+    @Override
+    @Transactional
+    public void deleteCategory(UUID categoryId) {
+        Category defaultCategory = categoryRepository.findByName("generalCategory").orElseThrow(
+                () -> new ResourceNotFoundException("General Category Not Found")
+        );
+        if (defaultCategory.getId().equals(categoryId)) {
+            throw new BadRequestException("Cannot delete the default category");
+        }
+        productRepository.changeAllProductCategory(categoryId, defaultCategory);
+        this.categoryRepository.deleteById(categoryId);
     }
 }

@@ -1,6 +1,7 @@
 package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.ErrorResponse;
+import com.pharmaflow.demo.Exceptions.BadRequestException;
 import com.pharmaflow.demo.Exceptions.InvalidStockException;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import org.springframework.http.HttpStatus;
@@ -40,6 +41,20 @@ public class GlobalExceptionHandler {
                 .path(request.getDescription(false).replace("uri=", ""))
                 .build();
         return ResponseEntity.status(HttpStatus.CONFLICT).body(errorResponse);
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(
+            Exception ex,
+            WebRequest request){
+        ErrorResponse errorResponse = ErrorResponse.builder()
+                .statusCode(HttpStatus.BAD_REQUEST.value())
+                .message(ex.getMessage())
+                .errorCode("BAD_REQUEST")
+                .timestamp(LocalDateTime.now())
+                .path(request.getDescription(false).replace("uri=", ""))
+                .build();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
