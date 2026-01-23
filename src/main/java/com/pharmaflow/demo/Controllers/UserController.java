@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Controllers;
 import com.pharmaflow.demo.Dto.EditUser;
 import com.pharmaflow.demo.Dto.UserDto;
 import com.pharmaflow.demo.Services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -39,6 +40,7 @@ public class UserController {
 
     @PatchMapping
     public ResponseEntity<UserDto> editUser(
+            @Valid
             @RequestBody EditUser editUser
             ) {
         return ResponseEntity.ok()

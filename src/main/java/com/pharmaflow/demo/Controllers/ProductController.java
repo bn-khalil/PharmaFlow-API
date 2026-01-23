@@ -3,6 +3,9 @@ package com.pharmaflow.demo.Controllers;
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Services.ProductService;
+import com.pharmaflow.demo.validation.OnCreate;
+import com.pharmaflow.demo.validation.OnUpdate;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +14,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -27,7 +31,7 @@ public class ProductController {
             @RequestParam(required = false) String q,
             @RequestParam(required = false) Long size,
             @RequestParam(required = false) Long dosage,
-            @RequestParam(required = false) boolean archived,
+            @RequestParam(required = false, defaultValue = "false") boolean archived,
             @PageableDefault(size = 20, sort = "createdAt",
                     direction = Sort.Direction.DESC)
             Pageable pageable
@@ -57,7 +61,9 @@ public class ProductController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ProductDto> createProduct(
-            @RequestBody ProductDto productDto
+            @Validated(OnCreate.class)
+            @RequestBody
+            ProductDto productDto
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.productService.createProduct(productDto));
@@ -77,6 +83,7 @@ public class ProductController {
     @PatchMapping("/{productId}/edit")
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ProductDto> editProduct(
+            @Validated(OnUpdate.class)
             @PathVariable("productId") UUID productId,
             @RequestBody ProductDto productDto
     ) {

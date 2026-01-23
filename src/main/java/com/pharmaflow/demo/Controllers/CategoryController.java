@@ -2,6 +2,7 @@ package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.CategoryDto;
 import com.pharmaflow.demo.Services.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class CategoryController {
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<CategoryDto> createCategory(
+            @Valid
             @RequestBody CategoryDto categoryDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.categoryService.createCategory(categoryDto));

@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Controllers;
 import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Dto.SaleDto;
 import com.pharmaflow.demo.Services.SaleService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -47,7 +48,7 @@ public class SaleController {
     }
 
     @PostMapping
-    public ResponseEntity<SaleDto> createSale(@RequestBody SaleDto saleDto) {
+    public ResponseEntity<SaleDto> createSale(@Valid @RequestBody SaleDto saleDto) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(this.saleService.createSale(saleDto));
     }

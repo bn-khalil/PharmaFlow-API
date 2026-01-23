@@ -8,6 +8,7 @@ public record UserLogin(
         @Email
         @NotBlank(message = "email isn't valid")
         String email,
+
         @NotBlank(message = "Password is required")
         String password
 ) {}
