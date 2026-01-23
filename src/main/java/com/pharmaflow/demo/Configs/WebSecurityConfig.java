@@ -1,6 +1,7 @@
 package com.pharmaflow.demo.Configs;
 
 import com.pharmaflow.demo.Security.JwtAuthenticationFilter;
+import com.pharmaflow.demo.Security.UserActiveAndPasswordChangedFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -26,6 +27,7 @@ public class WebSecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
+    private final UserActiveAndPasswordChangedFilter userActiveAndPasswordChangedFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -33,11 +35,15 @@ public class WebSecurityConfig {
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/change-password").permitAll()
                         .anyRequest().authenticated()
                 )
-                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session ->
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(userActiveAndPasswordChangedFilter, JwtAuthenticationFilter.class)
                 .build();
     }
 

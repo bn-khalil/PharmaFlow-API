@@ -20,20 +20,13 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
-    private final HandlerExceptionResolver resolver;
+    private final HandlerExceptionResolver handlerExceptionResolver;
 
-    public JwtAuthenticationFilter(
-            JwtService jwtService,
-            UserDetailsService userDetailsService,
-            HandlerExceptionResolver handlerExceptionResolver) {
-        this.jwtService = jwtService;
-        this.userDetailsService = userDetailsService;
-        this.resolver = handlerExceptionResolver;
-    }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -64,7 +57,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }
         } catch (Exception e) {
-            resolver.resolveException(request, response, null, e);
+            handlerExceptionResolver.resolveException(request, response, null, e);
             return;
         }
         filterChain.doFilter(request, response);
