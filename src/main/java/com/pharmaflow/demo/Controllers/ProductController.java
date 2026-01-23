@@ -84,7 +84,7 @@ public class ProductController {
                 .body(this.productService.editProduct(productId, productDto));
     }
 
-    @DeleteMapping("/{productId}/delete")
+    @PatchMapping("/{productId}/active")
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ProductDto> enableOrDisableProduct(
             @PathVariable("productId") UUID productId

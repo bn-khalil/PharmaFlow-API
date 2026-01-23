@@ -39,7 +39,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(readOnly = true)
-    public ResponsePage<ProductDto> getAllProducts(String search, Long size, Long dosage, boolean archived, Pageable pageable) {
+    public ResponsePage<ProductDto> getAllProducts(
+            String search,
+            Long size,
+            Long dosage,
+            boolean archived,
+            Pageable pageable
+    ) {
 
         Specification<Product> spec = Specification.<Product>where(
                 (root, query, cb) -> cb.conjunction()

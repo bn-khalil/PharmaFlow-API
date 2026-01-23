@@ -30,6 +30,11 @@ public interface UserNotificationRepository extends JpaRepository<UserNotificati
     """)
     List<UserNotification> findMyReadNotifications(@Param("userId") UUID userId);
 
+    @Query("""
+    select un from UserNotification un
+    where un.user.id = :userId
+    order by un.isRead asc, un.createdAt desc
+    limit 20
+    """)
     List<UserNotification> findAllByUserId(@Param("userId") UUID userId);
-
 }
