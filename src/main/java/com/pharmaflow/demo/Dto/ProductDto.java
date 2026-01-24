@@ -35,6 +35,8 @@ public abstract class ProductDto {
 
         protected String image;
 
+        protected String imageUrl;
+
         @Min(value = 0, message = "Quantity cannot be negative")
         protected long quantity;
 

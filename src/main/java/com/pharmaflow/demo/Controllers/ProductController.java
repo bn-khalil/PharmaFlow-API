@@ -2,21 +2,32 @@ package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.ProductDto;
 import com.pharmaflow.demo.Dto.ResponsePage;
+import com.pharmaflow.demo.Services.FileUploadService;
 import com.pharmaflow.demo.Services.ProductService;
 import com.pharmaflow.demo.validation.OnCreate;
 import com.pharmaflow.demo.validation.OnUpdate;
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 @RestController
@@ -25,6 +36,7 @@ import java.util.UUID;
 public class ProductController {
 
     private final ProductService productService;
+    private final FileUploadService fileUploadService;
 
     @GetMapping
     ResponseEntity<ResponsePage<ProductDto>> getAllProducts(
@@ -36,12 +48,28 @@ public class ProductController {
                     direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
+
         return ResponseEntity.ok()
                 .body(this.productService.getAllProducts(q, size, dosage, archived, pageable));
     }
 
+    @GetMapping("/images/{filename:.+}")
+    ResponseEntity<Resource> getProductImage(@PathVariable String filename) throws IOException {
+        Path filePath = Paths.get("uploads/products").resolve(filename).normalize();
+        Resource resource = new UrlResource(filePath.toUri());
+        if (resource.exists() && resource.isReadable()) {
+            String fileExtensionType = Files.probeContentType(filePath);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, fileExtensionType)
+                    .body(resource);
+        }
+        else
+            return ResponseEntity.notFound().build();
+    }
+
+
     @GetMapping("/{productId}")
-    ResponseEntity<ProductDto> getAllProducts(
+    ResponseEntity<ProductDto> getProductById(
             @PathVariable(name = "productId") UUID productId
     ) {
         return ResponseEntity.ok()
@@ -58,15 +86,23 @@ public class ProductController {
                 .body(this.productService.getProductByCategory(categoryId, pageable));
     }
 
-    @PostMapping
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ProductDto> createProduct(
             @Validated(OnCreate.class)
-            @RequestBody
-            ProductDto productDto
-    ) {
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(this.productService.createProduct(productDto));
+            @RequestPart ProductDto productDto,
+            @RequestPart MultipartFile image
+            ) throws IOException {
+
+            String imageName = fileUploadService.saveFile(image);
+        try {
+            productDto.setImage(imageName);
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(this.productService.createProduct(productDto));
+        } catch (Exception e) {
+            fileUploadService.deleteFile(imageName);
+            throw e;
+        }
     }
 
     @PatchMapping("/{productId}/add-stock")

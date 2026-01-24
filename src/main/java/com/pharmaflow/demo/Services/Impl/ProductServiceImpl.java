@@ -21,6 +21,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -36,6 +38,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final NotificationService notificationService;
     private final AuditService auditService;
+
 
     @Override
     @Transactional(readOnly = true)
@@ -66,7 +69,15 @@ public class ProductServiceImpl implements ProductService {
 
         Page<ProductDto> productDtoPage = this.productRepository
                 .findAll(spec, pageable)
-                .map(this.productMapper::toDto);
+                .map( product ->  {
+                    ProductDto productDto = this.productMapper.toDto(product);
+                    String fullImageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("/products/images/")
+                            .path(product.getImage())
+                            .toUriString();
+                    productDto.setImageUrl(fullImageUrl);
+                    return productDto;
+                });
 
         return ResponsePage.fromPage(productDtoPage);
     }
@@ -80,9 +91,16 @@ public class ProductServiceImpl implements ProductService {
 
         Page<ProductDto> productDtoPage = this.productRepository
                 .findAllByCategory(category, pageable)
-                .map(this.productMapper::toDto);
+                .map( product ->  {
+                    ProductDto productDto = this.productMapper.toDto(product);
+                    String fullImageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                            .path("/products/images/")
+                            .path(product.getImage())
+                            .toUriString();
+                    productDto.setImageUrl(fullImageUrl);
+                    return productDto;
+                });
         return ResponsePage.fromPage(productDtoPage);
-
     }
 
     @Override
@@ -90,7 +108,13 @@ public class ProductServiceImpl implements ProductService {
         Product product = this.productRepository.getProductById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("product not found!")
         );
-        return this.productMapper.toDto(product);
+        ProductDto productDto = this.productMapper.toDto(product);
+        String fullImageUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/products/images/")
+                .path(product.getImage())
+                .toUriString();
+        productDto.setImageUrl(fullImageUrl);
+        return productDto;
     }
 
     @Override
@@ -107,6 +131,7 @@ public class ProductServiceImpl implements ProductService {
         product.setNearExpiredStatus(false);
         product.setActive(true);
         product = this.productRepository.save(product);
+        this.notificationService.createNotification(product.getName() + "added to stock", Notify.STOCK_ADDED, product);
         productDto.setId(product.getId());
         return productDto;
     }
