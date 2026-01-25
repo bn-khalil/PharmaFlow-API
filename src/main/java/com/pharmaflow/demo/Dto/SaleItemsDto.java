@@ -28,7 +28,6 @@ public record SaleItemsDto(
         @Min(value = 1, message = "product number must be at least 1")
         long quantity,
 
-        @NotNull(message = "Price at sale is required")
         @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
         BigDecimal priceAtSale) {
 }

@@ -21,9 +21,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -66,7 +64,6 @@ public class ProductController {
         else
             return ResponseEntity.notFound().build();
     }
-
 
     @GetMapping("/{productId}")
     ResponseEntity<ProductDto> getProductById(

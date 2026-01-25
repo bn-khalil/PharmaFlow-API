@@ -1,9 +1,17 @@
-1-file uploading
-2-reset password
+file uploading✅
+
+// todays tasks
+1-AOP for audits ...
+2-real time (optional)
+
+3-emailing
+
+2-reset passwor
 2-caching
 3-oAuth
 4-cookies
-5-emailing
 6-load balancing
 7-microservices
-8-real time (optinal)
+
+// obtain the top sale products last month and profits for each month and year
+// batch processing (reduce performance inserting set of items at once instead one by one)

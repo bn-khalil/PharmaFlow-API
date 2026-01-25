@@ -41,6 +41,11 @@ public class UserServiceImpl implements UserService {
                     .or(UserSpecifications.hasFirstName(search));
         if (role != null && !role.trim().isEmpty())
             spec = spec.and(UserSpecifications.hasRole(role));
+        spec = spec.and((root, query, criteriaBuilder) -> {
+            query.orderBy(criteriaBuilder.desc(root.get("role")));
+                return null;
+            }
+        );
         List<User> users = this.userRepository.findAll(spec);
         return this.userMapper.toDto(users);
     }

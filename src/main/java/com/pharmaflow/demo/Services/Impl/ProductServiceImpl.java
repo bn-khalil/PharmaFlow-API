@@ -131,7 +131,7 @@ public class ProductServiceImpl implements ProductService {
         product.setNearExpiredStatus(false);
         product.setActive(true);
         product = this.productRepository.save(product);
-        this.notificationService.createNotification(product.getName() + "added to stock", Notify.STOCK_ADDED, product);
+        this.notificationService.createNotification(product.getName() + " added to stock", Notify.STOCK_ADDED, product);
         productDto.setId(product.getId());
         return productDto;
     }
@@ -165,7 +165,7 @@ public class ProductServiceImpl implements ProductService {
             throw new InvalidStockException("Stock not enough for product: " + product.getName());
         product.setQuantity(product.getQuantity() - quantity);
         if (product.getQuantity() < 10) {
-            String message = product.getQuantity() + " items left, " + product.getName() + " low in stock";
+            String message = product.getQuantity() + " items left or less, " + product.getName() + " low in stock";
             this.notificationService.createNotification(message, Notify.LOW_STOCK, product);
         }
         return this.productMapper.toDto(this.productRepository.save(product));

@@ -8,6 +8,7 @@ import com.pharmaflow.demo.Entities.Product;
 import com.pharmaflow.demo.Entities.Sale;
 import com.pharmaflow.demo.Entities.SaleItem;
 import com.pharmaflow.demo.Enums.Action;
+import com.pharmaflow.demo.Events.AuditCreatedEvent;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.SaleMapper;
 import com.pharmaflow.demo.Repositories.ProductRepository;
@@ -16,6 +17,7 @@ import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuditService;
 import com.pharmaflow.demo.Services.ProductService;
 import com.pharmaflow.demo.Services.SaleService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,7 @@ public class SaleServiceImpl implements SaleService {
     private final ProductService productService;
     private final SaleMapper saleMapper;
     private final AuditService auditService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -81,8 +84,13 @@ public class SaleServiceImpl implements SaleService {
             long after = before - quantity;
 
             this.productService.reduceStock(productId, quantity);
-            this.auditService.createAudit(newItem.getProduct().getName(),
-                    newItem.getQuantity(), Action.SALE, before, after);
+            applicationEventPublisher.publishEvent(new AuditCreatedEvent(
+                    newItem.getProduct().getName(),
+                    newItem.getQuantity(),
+                    Action.SALE,
+                    before,
+                    after));
+
             return newItem;
         }).toList();
 
