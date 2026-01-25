@@ -1,5 +1,10 @@
 package com.pharmaflow.demo.Events;
 
-public record NotificationEvent(
+import com.pharmaflow.demo.Entities.Product;
+import com.pharmaflow.demo.Enums.Notify;
 
-) { }
+public record NotificationEvent(
+        String message,
+        Notify notif,
+        Product product
+) {}

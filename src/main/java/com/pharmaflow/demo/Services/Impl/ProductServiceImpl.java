@@ -6,6 +6,8 @@ import com.pharmaflow.demo.Entities.Category;
 import com.pharmaflow.demo.Entities.Product;
 import com.pharmaflow.demo.Enums.Action;
 import com.pharmaflow.demo.Enums.Notify;
+import com.pharmaflow.demo.Events.AuditCreatedEvent;
+import com.pharmaflow.demo.Events.NotificationEvent;
 import com.pharmaflow.demo.Exceptions.InvalidStockException;
 import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.ProductMapper;
@@ -15,6 +17,7 @@ import com.pharmaflow.demo.Repositories.Specifications.ProductSpecifications;
 import com.pharmaflow.demo.Services.AuditService;
 import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -38,6 +41,7 @@ public class ProductServiceImpl implements ProductService {
     private final CategoryRepository categoryRepository;
     private final NotificationService notificationService;
     private final AuditService auditService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
 
     @Override
@@ -130,10 +134,15 @@ public class ProductServiceImpl implements ProductService {
         product.setExpiredStatus(false);
         product.setNearExpiredStatus(false);
         product.setActive(true);
-        product = this.productRepository.save(product);
-        this.notificationService.createNotification(product.getName() + " added to stock", Notify.STOCK_ADDED, product);
-        productDto.setId(product.getId());
-        return productDto;
+
+        Product savedProduct = this.productRepository.save(product);
+
+        applicationEventPublisher.publishEvent(new NotificationEvent(
+                product.getName() + " added to stock",
+                Notify.STOCK_ADDED,
+                savedProduct
+        ));
+        return this.productMapper.toDto(savedProduct);
     }
 
     @Override
@@ -147,12 +156,21 @@ public class ProductServiceImpl implements ProductService {
         product.setQuantity(product.getQuantity() + quantity);
         long after = product.getQuantity();
 
-        this.auditService.createAudit(product.getName(), product.getQuantity(), Action.STOCK, before, after);
+        Product savedProduct = this.productRepository.save(product);
 
-        String message = quantity + " units from " + product.getName() + " added to Stock";
-        this.notificationService.createNotification(message, Notify.STOCK_ADDED, product);
-
-        return this.productMapper.toDto(this.productRepository.save(product));
+        applicationEventPublisher.publishEvent(new AuditCreatedEvent(
+                product.getName(),
+                product.getQuantity(),
+                Action.STOCK,
+                before,
+                after
+        ));
+        applicationEventPublisher.publishEvent(new NotificationEvent(
+                quantity + " units from " + product.getName() + " added to Stock",
+                Notify.STOCK_ADDED,
+                savedProduct
+        ));
+        return this.productMapper.toDto(savedProduct);
     }
 
     @Override
@@ -164,11 +182,15 @@ public class ProductServiceImpl implements ProductService {
         if (product.getQuantity() < quantity)
             throw new InvalidStockException("Stock not enough for product: " + product.getName());
         product.setQuantity(product.getQuantity() - quantity);
+        Product savedProduct = this.productRepository.save(product);
         if (product.getQuantity() < 10) {
-            String message = product.getQuantity() + " items left or less, " + product.getName() + " low in stock";
-            this.notificationService.createNotification(message, Notify.LOW_STOCK, product);
+            applicationEventPublisher.publishEvent(new NotificationEvent(
+                    product.getQuantity() + " items left or less, " + product.getName() + " low in stock",
+                    Notify.LOW_STOCK,
+                    savedProduct
+            ));
         }
-        return this.productMapper.toDto(this.productRepository.save(product));
+        return this.productMapper.toDto(savedProduct);
     }
 
     @Override
@@ -177,8 +199,11 @@ public class ProductServiceImpl implements ProductService {
         if (expiredProducts == null || expiredProducts.isEmpty())
             return ;
         for (Product product :  expiredProducts) {
-            String message = "Product " + product.getName() + " expired at " + product.getExpiryDate().toLocalDate();
-            this.notificationService.createNotification(message, Notify.EXPIRED, product);
+            applicationEventPublisher.publishEvent(new NotificationEvent(
+                    "Product " + product.getName() + " expired at " + product.getExpiryDate().toLocalDate(),
+                    Notify.EXPIRED,
+                    product
+            ));
         }
     }
 
@@ -192,10 +217,13 @@ public class ProductServiceImpl implements ProductService {
         if (expiredProducts == null || expiredProducts.isEmpty())
             return ;
         for (Product product :  expiredProducts) {
-            String message = "Product " + product.getName() +
-                    " will be expired at " +
-                    product.getExpiryDate().toLocalDate();
-            this.notificationService.createNotification(message, Notify.NEAR_EXPIRY, product);
+            applicationEventPublisher.publishEvent(new NotificationEvent(
+                    "Product " + product.getName() +
+                            " will be expired at " +
+                            product.getExpiryDate().toLocalDate(),
+                    Notify.NEAR_EXPIRY,
+                    product
+            ));
         }
     }
 

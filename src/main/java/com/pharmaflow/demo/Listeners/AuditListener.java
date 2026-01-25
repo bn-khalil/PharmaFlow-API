@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Listeners;
 import com.pharmaflow.demo.Events.AuditCreatedEvent;
 import com.pharmaflow.demo.Services.AuditService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ public class AuditListener {
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
+    @Async
     public void auditCreated(AuditCreatedEvent auditCreatedEvent) {
         this.auditService.createAudit(
                 auditCreatedEvent.productName(),
