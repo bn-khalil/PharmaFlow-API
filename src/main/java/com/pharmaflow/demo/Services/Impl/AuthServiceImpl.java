@@ -4,21 +4,18 @@ import com.pharmaflow.demo.Dto.AuthResponse;
 import com.pharmaflow.demo.Dto.UserLogin;
 import com.pharmaflow.demo.Dto.UserRegister;
 import com.pharmaflow.demo.Entities.User;
-import com.pharmaflow.demo.Exceptions.BadRequestException;
+import com.pharmaflow.demo.Events.MailSendWelcomeEvet;
 import com.pharmaflow.demo.Exceptions.ResourceDuplicated;
-import com.pharmaflow.demo.Exceptions.ResourceNotFoundException;
 import com.pharmaflow.demo.Mappers.UserMapper;
 import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuthService;
-import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -31,6 +28,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder encoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     @Transactional
@@ -39,7 +37,12 @@ public class AuthServiceImpl implements AuthService {
             throw new ResourceDuplicated("email already exist!");
         User user = this.userMapper.toEntity(userRegister);
         user.setPassword(this.encoder.encode(user.getPassword()));
-        this.userRepository.save(user);
+        User savedUser = this.userRepository.save(user);
+        applicationEventPublisher.publishEvent(new MailSendWelcomeEvet(
+                savedUser.getEmail(),
+                user.getFirstName(),
+                user.getRole().toString())
+        );
         return AuthResponse.builder()
                 .message(user.getFirstName() + " registered successfully!")
                 .email(user.getEmail())

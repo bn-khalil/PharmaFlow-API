@@ -39,8 +39,6 @@ public class ProductServiceImpl implements ProductService {
     private final ProductMapper productMapper;
     private final ProductRepository productRepository;
     private final CategoryRepository categoryRepository;
-    private final NotificationService notificationService;
-    private final AuditService auditService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
 

@@ -15,7 +15,7 @@ public class AsyncConfig {
     // to execute tasks in parallel this configs will limit and control
     // since there is big problem if letting @Async with default that lead to
     // create new thread for each function calls with new configs the number of
-    // threads are limited but working with efeciant way
+    // threads are limited but working with a good way
 
     @Bean
     public Executor notificationExecutor() {
