@@ -16,9 +16,10 @@ public class AuditListener {
 
     private final AuditService auditService;
 
+    // singing this task to other thread will lead to can't access
+    // spring context holder sine we use it for creating audits
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    @Async
     public void auditCreated(AuditCreatedEvent auditCreatedEvent) {
         this.auditService.createAudit(
                 auditCreatedEvent.productName(),

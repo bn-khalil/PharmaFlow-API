@@ -200,7 +200,8 @@ public class ProductServiceImpl implements ProductService {
             return ;
         for (Product product :  expiredProducts) {
             applicationEventPublisher.publishEvent(new NotificationEvent(
-                    "Product " + product.getName() + " expired at " + product.getExpiryDate().toLocalDate(),
+                    "Product " + product.getName() + " expired at " +
+                            product.getExpiryDate().toLocalDate(),
                     Notify.EXPIRED,
                     product
             ));

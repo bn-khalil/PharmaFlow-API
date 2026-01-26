@@ -36,6 +36,7 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/login").permitAll()
                         .requestMatchers("/auth/change-password").permitAll()
+                        .requestMatchers("/ws-pharma/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
