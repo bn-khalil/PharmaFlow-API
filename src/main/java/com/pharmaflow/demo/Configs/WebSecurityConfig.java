@@ -1,7 +1,9 @@
 package com.pharmaflow.demo.Configs;
 
 import com.pharmaflow.demo.Security.JwtAuthenticationFilter;
+import com.pharmaflow.demo.Security.OauthSuccessHandler;
 import com.pharmaflow.demo.Security.UserActiveAndPasswordChangedFilter;
+import com.pharmaflow.demo.Services.Impl.CustomOAuth2UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +31,8 @@ public class WebSecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final UserDetailsService userDetailsService;
     private final UserActiveAndPasswordChangedFilter userActiveAndPasswordChangedFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OauthSuccessHandler oauthSuccessHandler;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,10 +45,12 @@ public class WebSecurityConfig {
                         .requestMatchers("/ws-pharma/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .oauth2Login(Customizer.withDefaults())
-
+                .oauth2Login(auth2 -> auth2
+                        .userInfoEndpoint(userIn-> userIn.userService(customOAuth2UserService))
+                        .successHandler(oauthSuccessHandler)
+                )
                 .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)

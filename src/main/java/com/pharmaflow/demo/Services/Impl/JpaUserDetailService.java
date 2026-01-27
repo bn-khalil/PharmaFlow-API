@@ -11,6 +11,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @AllArgsConstructor
 @Service
 public class JpaUserDetailService implements UserDetailsService {
@@ -22,6 +24,6 @@ public class JpaUserDetailService implements UserDetailsService {
         User user = this.userRepository.findUserByEmail(username).orElseThrow(
                 () -> new ResourceNotFoundException("User Not Found!")
         );
-        return new UserSecurity(user);
+        return new UserSecurity(user, Map.of());
     }
 }
