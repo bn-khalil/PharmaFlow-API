@@ -39,12 +39,17 @@ public class WebSecurityConfig {
         return http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login", "/auth/call-back").permitAll()
-                        .requestMatchers("/auth/change-password").permitAll()
-                        .requestMatchers("/login/**","/oauth2/**").permitAll()
-                        .requestMatchers("/ws-pharma/**").permitAll()
+                        .requestMatchers(
+                                "/auth/login",
+                                "/auth/call-back",
+                                "/auth/change-password",
+                                "/oauth2/**",
+                                "/ws-pharma/**",
+                                "/v3/api-docs/**",
+                                "/v3/api-docs.yaml",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated()
-
                 )
                 .oauth2Login(auth2 -> auth2
                         .userInfoEndpoint(userIn-> userIn.userService(customOAuth2UserService))
