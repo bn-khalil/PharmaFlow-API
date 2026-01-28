@@ -39,11 +39,12 @@ public class WebSecurityConfig {
         return http
                 .csrf(customizer -> customizer.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/login").permitAll()
+                        .requestMatchers("/auth/login", "/auth/call-back").permitAll()
                         .requestMatchers("/auth/change-password").permitAll()
                         .requestMatchers("/login/**","/oauth2/**").permitAll()
                         .requestMatchers("/ws-pharma/**").permitAll()
                         .anyRequest().authenticated()
+
                 )
                 .oauth2Login(auth2 -> auth2
                         .userInfoEndpoint(userIn-> userIn.userService(customOAuth2UserService))

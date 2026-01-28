@@ -18,10 +18,13 @@ public class OauthSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JwtService jwtService;
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request,
+                                        HttpServletResponse response,
+                                        Authentication authentication) throws IOException, ServletException {
         UserSecurity userSecurity = (UserSecurity) authentication.getPrincipal();
         String token = jwtService.generateToken(userSecurity);
         String targetUrl = "http://localhost:9090/api/v1/auth/call-back?token=" + token;
+        System.out.println("---------------------->  " + token);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }
