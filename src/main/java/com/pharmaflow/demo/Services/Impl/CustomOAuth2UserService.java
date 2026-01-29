@@ -5,19 +5,21 @@ import com.pharmaflow.demo.Enums.Role;
 import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final CacheManager cacheManager;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -30,10 +32,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 newUser.setEmail(oAuth2User.getAttribute("email"));
                 newUser.setActive(true);
                 newUser.setRole(Role.PHARMACIST);
-                newUser.setPassword("not mutter password here");
+                newUser.setPassword(null);
                 newUser.setPasswordChanged(true);
                 return this.userRepository.save(newUser);
         });
+        // remove user caches before login again
+        Objects.requireNonNull(cacheManager.getCache("user_auth")).evict(user.getId());
         return new UserSecurity(user, oAuth2User.getAttributes());
     }
 }

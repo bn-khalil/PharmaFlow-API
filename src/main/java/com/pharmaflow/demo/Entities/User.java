@@ -8,13 +8,15 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.io.Serializable;
+
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "users")
-public class User extends BaseEntity {
+public class User extends BaseEntity implements Serializable {
 
     @Column(nullable = false)
     private String firstName;
@@ -25,15 +27,15 @@ public class User extends BaseEntity {
     @Column(nullable = false, unique = true)
     private String email;
 
-    @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
     @ColumnDefault(value = "false")
-    private boolean isPasswordChanged;
+    private boolean passwordChanged;
 
     @Column(nullable = false)
     @ColumnDefault(value = "false")
-    private boolean isFirstAdmin = false;
+    private boolean FirstAdmin = false;
 
     @Column(nullable = false)
     @ColumnDefault(value = "true")

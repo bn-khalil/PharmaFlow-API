@@ -44,9 +44,7 @@ public class UserActiveAndPasswordChangedFilter extends OncePerRequestFilter {
             }
             UserSecurity userSecurity = (UserSecurity) auth.getPrincipal();
 
-            User user = userRepository.findById(userSecurity.getUser().getId()).orElseThrow(
-                    () -> new ResourceNotFoundException("User Not Found")
-            );
+            User user = userSecurity.getUser();
             if (user == null)
                 throw new RuntimeException("something wrong in singed User not found");
             if (!user.isActive())

@@ -2,6 +2,7 @@ package com.pharmaflow.demo.Dto;
 
 import lombok.Builder;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -15,5 +16,4 @@ public record UserDto(
         boolean active,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
-) {
-}
+) implements Serializable { }

@@ -4,7 +4,7 @@ import jakarta.validation.constraints.*;
 import lombok.Builder;
 
 @Builder
-public record UserRegister(
+public record UserRegister (
         @NotBlank(message = "first name is required")
         @Size(min = 2, max = 50, message = "input value is too long")
         String firstName,

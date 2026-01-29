@@ -9,6 +9,9 @@ import com.pharmaflow.demo.Repositories.CategoryRepository;
 import com.pharmaflow.demo.Repositories.ProductRepository;
 import com.pharmaflow.demo.Services.CategoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,7 @@ public class CategoryServiceImpl implements CategoryService {
     private final ProductRepository productRepository;
 
     @Override
+    @CachePut(value = "category_dto", key = "#result.id")
     public CategoryDto createCategory(CategoryDto categoryDto) {
         return this.categoryMapper.toDto(
                 this.categoryRepository.save(
@@ -38,6 +42,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(value = "category_dto", key = "#categoryId")
     public CategoryDto getCategoryById(UUID categoryId) {
         return this.categoryMapper.toDto(
                 this.categoryRepository.findById(categoryId).orElseThrow(
@@ -47,6 +52,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "category_dto", key = "#categoryId")
     public void deleteCategory(UUID categoryId) {
         Category defaultCategory = categoryRepository.findByName("generalCategory").orElseThrow(
                 () -> new ResourceNotFoundException("General Category Not Found")

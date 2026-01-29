@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import lombok.Builder;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -27,5 +28,5 @@ public record SaleDto(
         @Min(value = 1, message = "Items number must be at least 1")
         long itemsNumber,
 
-        LocalDateTime createAt) {
-}
+        LocalDateTime createAt
+) { }

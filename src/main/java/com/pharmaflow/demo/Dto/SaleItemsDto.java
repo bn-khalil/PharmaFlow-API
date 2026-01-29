@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.UUID;
 
@@ -29,5 +30,5 @@ public record SaleItemsDto(
         long quantity,
 
         @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than zero")
-        BigDecimal priceAtSale) {
-}
+        BigDecimal priceAtSale
+) { }

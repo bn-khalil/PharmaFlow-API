@@ -46,7 +46,6 @@ public class ProductController {
                     direction = Sort.Direction.DESC)
             Pageable pageable
     ) {
-
         return ResponseEntity.ok()
                 .body(this.productService.getAllProducts(q, size, dosage, archived, pageable));
     }

@@ -3,11 +3,12 @@ package com.pharmaflow.demo.Dto;
 import com.pharmaflow.demo.Enums.Action;
 import lombok.Builder;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Builder
-public record AuditDto(
+public record AuditDto (
         UUID id,
         String productName,
         long quantity,
@@ -17,5 +18,4 @@ public record AuditDto(
         long stockAfter,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
-) {
-}
+) { }

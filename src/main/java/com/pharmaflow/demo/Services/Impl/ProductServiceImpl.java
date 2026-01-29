@@ -17,6 +17,9 @@ import com.pharmaflow.demo.Repositories.Specifications.ProductSpecifications;
 import com.pharmaflow.demo.Services.AuditService;
 import com.pharmaflow.demo.Services.NotificationService;
 import com.pharmaflow.demo.Services.ProductService;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -106,6 +109,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Cacheable(value = "products", key = "#productId")
     public ProductDto getProductById(UUID productId) {
         Product product = this.productRepository.getProductById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("product not found!")
@@ -121,6 +125,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CachePut(value = "products", key = "#result.id")
     public ProductDto createProduct(ProductDto productDto) {
         Product product = this.productMapper.toEntity(productDto);
         if (product == null)
@@ -145,6 +150,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", key = "#productId")
     public ProductDto addStock(UUID productId, long quantity) {
         Product product = this.productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product Not Found!")
@@ -173,6 +179,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "products", key = "#productId")
     public ProductDto reduceStock(UUID productId, long quantity) {
         Product product = this.productRepository.findById(productId).orElseThrow(
                 () -> new ResourceNotFoundException("Product Not Found!")
@@ -189,6 +196,34 @@ public class ProductServiceImpl implements ProductService {
             ));
         }
         return this.productMapper.toDto(savedProduct);
+    }
+
+    @Override
+    @CachePut(value = "products", key = "#result.id")
+    public ProductDto editProduct(UUID productId, ProductDto productDto) {
+        Product product = this.productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product Not Found!")
+        );
+        this.productMapper.editProduct(productDto, product);
+        if (productDto.getCategory() != null
+                && !productDto.getCategory().trim().isEmpty()
+                && !productDto.getCategory().equals(product.getCategory().getName())) {
+            Category category = this.categoryRepository.findByName(productDto.getCategory()).orElseThrow(
+                    () -> new ResourceNotFoundException("Category Not Found!")
+            );
+            product.setCategory(category);
+        }
+        return this.productMapper.toDto(product);
+    }
+
+    @Override
+    @Transactional
+    @CacheEvict(value = "products", key = "#productId")
+    public void toggleProduct(UUID productId) {
+        Product product = this.productRepository.findById(productId).orElseThrow(
+                () -> new ResourceNotFoundException("Product Not Found")
+        );
+        product.setActive(!product.isActive());
     }
 
     @Override
@@ -224,31 +259,5 @@ public class ProductServiceImpl implements ProductService {
                     product
             ));
         }
-    }
-
-    @Override
-    public ProductDto editProduct(UUID productId, ProductDto productDto) {
-        Product product = this.productRepository.findById(productId).orElseThrow(
-                () -> new ResourceNotFoundException("Product Not Found!")
-        );
-        this.productMapper.editProduct(productDto, product);
-        if (productDto.getCategory() != null
-                && !productDto.getCategory().trim().isEmpty()
-                && !productDto.getCategory().equals(product.getCategory().getName())) {
-            Category category = this.categoryRepository.findByName(productDto.getCategory()).orElseThrow(
-                    () -> new ResourceNotFoundException("Category Not Found!")
-            );
-            product.setCategory(category);
-        }
-        return this.productMapper.toDto(product);
-    }
-
-    @Override
-    @Transactional
-    public void toggleProduct(UUID productId) {
-        Product product = this.productRepository.findById(productId).orElseThrow(
-                () -> new ResourceNotFoundException("Product Not Found")
-        );
-        product.setActive(!product.isActive());
     }
 }

@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -26,7 +27,7 @@ import java.util.UUID;
         @JsonSubTypes.Type(value = MedicineDto.class, name = "MEDICINE"),
         @JsonSubTypes.Type(value = MedicalSuppleDto.class, name = "SUPPLY")
 })
-public abstract class ProductDto {
+public abstract class ProductDto implements Serializable {
         protected UUID id;
 
         @NotBlank(groups = OnCreate.class,message = "Product name is mandatory")

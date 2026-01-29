@@ -12,12 +12,16 @@ import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -26,6 +30,7 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final CacheManager cacheManager;
 
     @Override
     @Transactional(readOnly = true)
@@ -51,6 +56,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Cacheable(value = "user_dto", key = "#userId")
     public UserDto getUserById(UUID userId) {
         User user = this.userRepository.findById(userId).orElseThrow(
                 () -> new ResourceNotFoundException("User Not Found")
@@ -60,6 +66,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
+    @CachePut(value = "user_dto", key = "#result.id")
     public UserDto editUser(EditUser editUser) {
         UserSecurity userService = (UserSecurity)SecurityContextHolder.
                 getContext()
@@ -93,6 +100,11 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() != Role.ADMIN || userTarget.isFirstAdmin())
             throw new BadRequestException("Cannot disable this Account");
 
+        // remove all caches related to user
+        Objects.requireNonNull(cacheManager.getCache("user_auth")).evict(userTarget.getEmail());
+        Objects.requireNonNull(cacheManager.getCache("user_dto")).evict(userId);
+
         userTarget.setActive(!userTarget.isActive());
+        this.userRepository.save(userTarget);
     }
 }

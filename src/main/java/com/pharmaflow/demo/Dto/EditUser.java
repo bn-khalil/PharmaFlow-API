@@ -12,5 +12,4 @@ public record EditUser(
         String lastName,
         @Email
         String email
-) {
-}
+) { }
