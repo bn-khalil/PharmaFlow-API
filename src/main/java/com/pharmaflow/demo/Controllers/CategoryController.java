@@ -43,6 +43,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("{categoryId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Void> deleteCategory(
             @PathVariable UUID categoryId
     ) {

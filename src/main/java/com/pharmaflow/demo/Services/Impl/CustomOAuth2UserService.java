@@ -38,6 +38,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         });
         // remove user caches before login again
         Objects.requireNonNull(cacheManager.getCache("user_auth")).evict(user.getId());
-        return new UserSecurity(user, oAuth2User.getAttributes());
+        return new UserSecurity(user, oAuth2User.getAttributes(), "");
     }
 }

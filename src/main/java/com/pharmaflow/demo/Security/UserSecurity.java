@@ -14,12 +14,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
 public class UserSecurity implements UserDetails, OAuth2User, Serializable  {
 
     private User user;
     private Map<String, Object> attrs;
+    private String token;
 
     @Override
     public Map<String, Object> getAttributes() {

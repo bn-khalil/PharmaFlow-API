@@ -10,7 +10,15 @@ import com.pharmaflow.demo.Mappers.UserMapper;
 import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import com.pharmaflow.demo.Services.AuthService;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.config.Elements;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,8 +27,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.lang.model.element.Element;
+import java.time.Duration;
+import java.util.Date;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
+
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -29,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     @Transactional
@@ -51,6 +66,7 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "user_auth", key = "#userLogin.email")
     public AuthResponse login(UserLogin userLogin) {
         Authentication auth = this.authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userLogin.email(), userLogin.password())
@@ -59,10 +75,26 @@ public class AuthServiceImpl implements AuthService {
         UserSecurity userSecurity = (UserSecurity) auth.getPrincipal();
         String jwtToken = this.jwtService.generateToken(userSecurity);
 
+        if (userSecurity == null)
+            throw new RuntimeException("some thing wrong with Context is empty");
+
         return AuthResponse.builder()
                 .message("singed successfully!")
                 .email(userSecurity.getUsername())
                 .token(jwtToken)
                 .build();
+    }
+
+    @Override
+    public void logout() {
+        UserSecurity userSecurity = (UserSecurity) Objects.requireNonNull(SecurityContextHolder.getContext()
+                .getAuthentication()).getPrincipal();
+        String token = userSecurity.getToken();
+        User user  = userSecurity.getUser();
+        Date timeout = jwtService.extractExpiration(token);
+        if (timeout.getTime() > System.currentTimeMillis())
+            redisTemplate.opsForValue().set("black_token::" + token,
+                    token,
+                    Duration.ofMillis(timeout.getTime() - System.currentTimeMillis()));
     }
 }

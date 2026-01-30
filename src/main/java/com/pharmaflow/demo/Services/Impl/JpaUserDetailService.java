@@ -22,10 +22,9 @@ public class JpaUserDetailService implements UserDetailsService {
     @Override
     @Cacheable(value = "user_auth", key = "#username")
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        System.out.println("yes");
         User user = this.userRepository.findUserByEmail(username).orElseThrow(
                 () -> new ResourceNotFoundException("User Not Found!")
         );
-        return new UserSecurity(user, Map.of());
+        return new UserSecurity(user, Map.of(), null);
     }
 }

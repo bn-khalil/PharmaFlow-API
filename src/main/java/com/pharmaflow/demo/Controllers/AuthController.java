@@ -43,4 +43,11 @@ public class AuthController {
         return ResponseEntity.ok()
                 .body(Map.of("token", token));
     }
+
+    @GetMapping("/logout")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Void> logout() {
+        this.authService.logout();
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -7,4 +7,5 @@ import com.pharmaflow.demo.Dto.UserRegister;
 public interface AuthService {
     AuthResponse register(UserRegister userRegister);
     AuthResponse login(UserLogin userLogin);
+    void logout();
 }

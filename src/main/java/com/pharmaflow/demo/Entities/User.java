@@ -2,10 +2,7 @@ package com.pharmaflow.demo.Entities;
 
 import com.pharmaflow.demo.Enums.Role;
 import jakarta.persistence.*;
-import lombok.Setter;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.io.Serializable;

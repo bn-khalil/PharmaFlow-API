@@ -26,6 +26,8 @@ public class JwtService {
         return buildToken(new HashMap<>(), userDetails, JWT_EXPIRATION);
     }
 
+
+
     private String buildToken(
             Map<String, Object> extraClaims,
             UserDetails userDetails,
@@ -45,7 +47,7 @@ public class JwtService {
         return extractClaim(token, Claims::getSubject);
     }
 
-    private Date extractExpiration(String token) {
+    public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
 
