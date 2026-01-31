@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Controllers;
 import com.pharmaflow.demo.Dto.EditUser;
 import com.pharmaflow.demo.Dto.UserDto;
 import com.pharmaflow.demo.Services.UserService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/users")
 @RequiredArgsConstructor
+@Tag(name = "User Management", description = "Endpoints to handle users, create, update and activate")
 public class UserController {
 
     private final UserService userService;

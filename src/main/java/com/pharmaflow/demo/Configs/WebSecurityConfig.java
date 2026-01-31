@@ -45,10 +45,12 @@ public class WebSecurityConfig {
                                 "/auth/change-password",
                                 "/oauth2/**",
                                 "/ws-pharma/**",
+                                "/v3/api-docs",
                                 "/v3/api-docs/**",
-                                "/v3/api-docs.yaml",
+                                "/swagger-ui.html",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html").permitAll()
+                                "/swagger-resources/**",
+                                "/webjars/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(auth2 -> auth2

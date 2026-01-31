@@ -2,6 +2,8 @@ package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.*;
 import com.pharmaflow.demo.Services.AuditService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -17,9 +19,14 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @RequestMapping("/audit")
 @PreAuthorize("hasRole('ADMIN')")
+@Tag(name = "Audit Management", description = "endpoints for trucking and viewing system audit logs")
 public class AuditController {
     private final AuditService auditService;
 
+    @Operation(
+            summary = "list audits",
+            description = "get all audits for each action with search by name creator or date"
+    )
     @GetMapping
     public ResponseEntity<ResponsePage<AuditDto>> getAllAudits(
             @RequestParam(required = false) String q,

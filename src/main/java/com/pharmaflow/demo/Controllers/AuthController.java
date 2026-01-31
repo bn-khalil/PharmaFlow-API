@@ -4,6 +4,8 @@ import com.pharmaflow.demo.Dto.AuthResponse;
 import com.pharmaflow.demo.Dto.UserLogin;
 import com.pharmaflow.demo.Dto.UserRegister;
 import com.pharmaflow.demo.Services.AuthService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,10 +18,15 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
+@Tag(name = "Sing In Management", description = "endpoints for entre and access system resources")
 public class AuthController {
 
     public final AuthService authService;
 
+    @Operation(
+            summary = "Create User",
+            description = "Creating new user in system by admin"
+    )
     @PostMapping("/register")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<AuthResponse> register(
@@ -29,6 +36,7 @@ public class AuthController {
                 .body(this.authService.register(userRegister));
     }
 
+    @Operation(summary = "Sing in User")
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(
             @Valid
@@ -37,6 +45,10 @@ public class AuthController {
                 .body(this.authService.login(userLogin));
     }
 
+    @Operation(
+            summary = "Get token",
+            description = "Get token generated after authentication with oauth"
+    )
     @GetMapping("/call-back")
     public ResponseEntity<Map<String ,String>> login(
             @RequestParam String token) {
@@ -44,6 +56,10 @@ public class AuthController {
                 .body(Map.of("token", token));
     }
 
+    @Operation(
+            summary = "Logout user",
+            description = "sing out of program and put oldest tokens in black list in redis"
+    )
     @GetMapping("/logout")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<Void> logout() {

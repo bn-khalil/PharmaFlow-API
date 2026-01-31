@@ -6,6 +6,7 @@ import com.pharmaflow.demo.Services.FileUploadService;
 import com.pharmaflow.demo.Services.ProductService;
 import com.pharmaflow.demo.validation.OnCreate;
 import com.pharmaflow.demo.validation.OnUpdate;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
@@ -31,6 +32,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/products")
 @RequiredArgsConstructor
+@Tag(name = "Products Management", description = "Endpoints to handle product inventory, stock updates and browsing")
 public class ProductController {
 
     private final ProductService productService;

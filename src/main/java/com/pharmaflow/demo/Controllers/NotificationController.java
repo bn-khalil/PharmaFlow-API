@@ -2,6 +2,7 @@ package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.UserNotificationDto;
 import com.pharmaflow.demo.Services.UserNotificationService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/notification")
 @RequiredArgsConstructor
+@Tag(name = "Notification Management", description = "endpoints for informing users with notifications")
 public class NotificationController {
 
     private final UserNotificationService userNotificationService;

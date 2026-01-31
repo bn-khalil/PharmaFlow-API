@@ -2,6 +2,7 @@ package com.pharmaflow.demo.Controllers;
 
 import com.pharmaflow.demo.Dto.CategoryDto;
 import com.pharmaflow.demo.Services.CategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,6 +16,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/categories")
 @RequiredArgsConstructor
+@Tag(name = "Category Management", description = "endpoints for control categories")
 public class CategoryController {
 
     private final CategoryService categoryService;

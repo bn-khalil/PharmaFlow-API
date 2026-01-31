@@ -3,6 +3,7 @@ package com.pharmaflow.demo.Controllers;
 import com.pharmaflow.demo.Dto.ResponsePage;
 import com.pharmaflow.demo.Dto.SaleDto;
 import com.pharmaflow.demo.Services.SaleService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +19,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/sale")
 @RequiredArgsConstructor
+@Tag(name = "Sale Management", description = "Endpoints to handle sales processes for products")
 public class SaleController {
 
     private final SaleService saleService;
