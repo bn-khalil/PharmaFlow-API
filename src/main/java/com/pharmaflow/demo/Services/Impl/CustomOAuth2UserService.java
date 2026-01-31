@@ -2,10 +2,12 @@ package com.pharmaflow.demo.Services.Impl;
 
 import com.pharmaflow.demo.Entities.User;
 import com.pharmaflow.demo.Enums.Role;
+import com.pharmaflow.demo.Events.MailSendWelcomeEvet;
 import com.pharmaflow.demo.Repositories.UserRepository;
 import com.pharmaflow.demo.Security.UserSecurity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -20,6 +22,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
     private final CacheManager cacheManager;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -36,6 +39,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                 newUser.setPasswordChanged(true);
                 return this.userRepository.save(newUser);
         });
+        applicationEventPublisher.publishEvent(new MailSendWelcomeEvet(
+                user.getEmail(),
+                user.getFirstName(),
+                user.getRole().toString())
+        );
         // remove user caches before login again
         Objects.requireNonNull(cacheManager.getCache("user_auth")).evict(user.getId());
         return new UserSecurity(user, oAuth2User.getAttributes(), "");
