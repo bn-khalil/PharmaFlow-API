@@ -3,7 +3,6 @@ package com.pharmaflow.demo.Dto;
 import com.pharmaflow.demo.Enums.Action;
 import lombok.Builder;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.UUID;
 

@@ -10,5 +10,6 @@ public record UserLogin(
         String email,
 
         @NotBlank(message = "Password is required")
+//        @Size(min = 8, max = 50, message = "password length invalid")
         String password
 ) {}
