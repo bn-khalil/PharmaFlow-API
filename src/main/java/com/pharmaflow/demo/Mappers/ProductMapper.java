@@ -7,7 +7,6 @@ import com.pharmaflow.demo.Entities.MedicalSupple;
 import com.pharmaflow.demo.Entities.Medicine;
 import com.pharmaflow.demo.Entities.Product;
 import org.mapstruct.*;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 

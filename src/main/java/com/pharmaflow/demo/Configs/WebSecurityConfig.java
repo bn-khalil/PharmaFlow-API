@@ -54,7 +54,9 @@ public class WebSecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .oauth2Login(auth2 -> auth2
-                        .userInfoEndpoint(userIn-> userIn.userService(customOAuth2UserService))
+                        .userInfoEndpoint(userIn-> userIn
+                            .userService(customOAuth2UserService)
+                        )
                         .successHandler(oauthSuccessHandler)
                 )
                 .sessionManagement(session ->
@@ -83,4 +85,3 @@ public class WebSecurityConfig {
         return new BCryptPasswordEncoder(12);
     }
 }
-

@@ -31,6 +31,7 @@ public class AdminInitializer implements CommandLineRunner {
             admin.setRole(Role.ADMIN);
             admin.setActive(true);
             admin.setFirstAdmin(true);
+            admin.setPasswordChanged(true);
             this.userRepository.save(admin);
             System.out.println("✅ Root Admin created: admin@pharmaflow.com / Admin@123");
         }

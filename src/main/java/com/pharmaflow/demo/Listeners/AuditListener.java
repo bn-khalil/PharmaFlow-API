@@ -3,7 +3,6 @@ package com.pharmaflow.demo.Listeners;
 import com.pharmaflow.demo.Events.AuditCreatedEvent;
 import com.pharmaflow.demo.Services.AuditService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;

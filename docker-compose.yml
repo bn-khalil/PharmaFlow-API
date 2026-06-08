@@ -1,0 +1,55 @@
+volumes:
+  postgres_data:
+  upload_vol:
+  redis_vol:
+
+networks:
+  pharmaflow-net:
+    driver: bridge
+
+services:
+  database:
+    image: postgres:15-alpine
+    container_name: pharmaflow-db
+    environment:
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pharmaflow-net
+    restart: on-failure
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pharmaflow-api
+    env_file:
+      - .env
+    environment:
+      - SPRING_DATA_REDIS_HOST=pharmaflow-cache
+      - SPRING_DATA_REDIS_PORT=6379
+      - SPRING_REDIS_HOST=pharmaflow-cache
+      - SPRING_REDIS_PORT=6379
+    ports:
+      - "9090:9090"
+    volumes:
+      - upload_vol:/app/uploads/products
+    depends_on:
+      - database
+      - cache
+    networks:
+      - pharmaflow-net
+    restart: on-failure
+
+  cache:
+    image: redis:7-alpine
+    container_name: pharmaflow-cache
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_vol:/data
+    networks:
+      - pharmaflow-net
+    restart: on-failure
